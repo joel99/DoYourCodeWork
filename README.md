@@ -2,18 +2,21 @@
 
 Preferences:
 * bracket styling
+
 function(){
 
 }
 
 * camelCase and spacing in parameters
-myFunction( <var1>, <var2>, <var3> ){
+
+myFunction( var1, var2, var3 ){
 
 }
 
 * double quotes for strings " " 
 
 * add function headers 
+
 """
 function() 
 Given:    
