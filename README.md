@@ -30,4 +30,4 @@ Desc:
 * four space tabbing 
 
 * one-liners: discouraged
-  readability >> all
+* readability >> all
