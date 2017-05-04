@@ -1,19 +1,19 @@
 # automatic-spoon
 
 Preferences:
-* bracket styling *
+* bracket styling
 function(){
 
 }
 
-* camelCase and spacing in parameters *
+* camelCase and spacing in parameters
 myFunction( <var1>, <var2>, <var3> ){
 
 }
 
-* double quotes for strings " " *
+* double quotes for strings " " 
 
-* add function headers *
+* add function headers 
 """
 function() 
 Given:    
@@ -24,7 +24,7 @@ Desc:
   nice
 """
 
-* four space tabbing *
+* four space tabbing 
 
-* one-liners: discouraged *
+* one-liners: discouraged
   readability >> all
