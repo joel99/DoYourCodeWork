@@ -1,0 +1,78 @@
+.log{
+	min-width: 250px;
+	padding: 15px 15px 0;
+}
+
+h1,h2,h3,h4{
+	text-shadow: 2px 2px black;
+}
+
+#warp{
+	position: relative;
+	min-height: 100%;
+}
+
+body{
+	background: url('http://www.userlogos.org/files/backgrounds/ctach1991/Clouds2560x1600.jpg');
+	height: 100%;
+}
+
+
+.container{
+	color: white;	
+}
+
+.jumbotron{
+	background: none;
+}
+
+.picture{
+	border-right: 2px solid white;
+	margin-right: 15px;
+
+}
+
+.navbar{
+	background: none;
+	border: none;
+}
+
+.nav.navbar-nav li a{
+	border-bottom: 2px solid transparent;
+}
+
+.nav.navbar-nav li a:hover{
+	border-bottom: 2px solid yellow;
+}
+
+.carousel-controls{
+	position:relative; 
+	width:400px;
+	margin:0 auto;
+}
+
+.track{
+	min-height: 20px;
+	padding-bottom: 10px;
+	padding-top;
+	min-width: 400px;
+	display: inline-block;
+	text-shadow: 2px 2px black;
+}
+
+#sim{
+	text-shadow: 2px 2px black;
+}
+
+#infobox{
+	margin-top: 20px;
+}
+
+#back{
+	background: url(http://i.huffpost.com/gen/1361872/images/o-VINYL-facebook.jpg);
+}
+
+@keyframes fade{
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+}
