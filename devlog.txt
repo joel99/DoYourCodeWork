@@ -27,5 +27,11 @@ joelY -- 2017-05-12 15:31
 
 - User login system worked on
 - Bootstrap brought in
-- Lots of skeletons
+==============================================
+
+================================
+joelY -- 2017-05-14 18:59
+
+- app.py working version complete
+- headers written for database function
 ==============================================

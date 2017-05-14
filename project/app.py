@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, url_for, redirect
-from utils import users
+from utils import users, mapUtil, gallery
 import json
 
 app = Flask(__name__)
@@ -9,6 +9,7 @@ app.secret_key = "secrets"
 
 # TODO:
 # Feedback on user actions (failed registration, etc)
+# Replace isLoggedIn with UserID for better UI in toolbar
 
 # NOTE: ALL ROUTES NEED TO END WITH / (ex. /login/ instead of /login)
 
@@ -24,26 +25,55 @@ def settings():
         return render_template( "settings.html" )
     return redirect( url_for('root') )
 
-# == General Browsing ==========================
+# == Gallery Browsing ==========================
 @app.route("/gallery/")
 def gallery():
-    return render_template( "gallery.html", isLoggedIn = isLoggedIn() )
+    return redirect( "/gallery/browse/page/1" )
+
+#To do - figure out number of pages / how to link them at bottom (reference database)
+@app.route("/gallery/browse/<pageNum>")
+def galleryPage(pageNum):
+    data = gallery.getPage(pageNum)
+    if len(data) == 0:
+        #rip come back later
+        return render_template( "emptyGallery.html", isLoggedIn = isLoggedIn() )
+    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )    
 
 # == Queried ===================================
-@app.route("/gallery/<specific>")
-def wow():
-    return None #ummm
-
+@app.route("/gallery/search/<searchQuery>") #Umm, should this be a post request
+def gallerySearch(searchQuery):
+    data = gallery.search(searchQuery)
+    if len(data) == 0:
+        return render_template( "searchEmptygallery.html", isLoggedIn = isLoggedIn() )
+    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )    
+    
 @app.route("/help/")
 def help():
     return render_template( "help.html", isLoggedIn = isLoggedIn() )
 
 
-@app.route("/map/")
-def mapPage():
-    return render_template( "map.html", isLoggedIn = isLoggedIn() )
+@app.route("/map/<mapID>")
+def mapPage(mapID):
+    locked = True
+    if isPublished(mapID):
+        locked = False
+    if isLoggedIn():
+        uID = getUserID()
+        if ownsMap(uID, mapID):
+            owns = True
+            locked = False
+    #if map is public, all viewers can view it (unlocked)
+    #if map is private, only owner can view it (and gets link to edit on page)
+    return render_template( "map.html", isLoggedIn = isLoggedIn(), owned = owns, lock = locked )
 
-
+#EDITING PAGE
+@app.route("/map/<mapID>/edit")
+def mapEdit(mapID):
+    if not ownsMap(uID, mapID):
+        return redirect( url_for('root') )
+    else:
+        data = mapUtil.getMapData(mapID)
+        return render_template( "editMap.html", mapData = data ) 
 
 # Login Routes ======================================
 
@@ -93,7 +123,10 @@ def isLoggedIn():
     return "uID" in session
 
 def getUserID():
-    return session["uID"]
+    if isLoggedIn():
+        return session["uID"]
+    else:
+        return None
 
 if __name__ == "__main__":
     app.debug = True
