@@ -35,3 +35,9 @@ joelY -- 2017-05-14 18:59
 - app.py working version complete
 - headers written for database function
 ==============================================
+
+================================
+joelY -- 2017-05-14 19:49
+
+- editor js started
+==============================================

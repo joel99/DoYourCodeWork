@@ -4,3 +4,5 @@ A lot of stuff
 
 Notice to frontend:
        skipped isLoggedIn for some pages that you have to be loggedIn to check, consider making another template that has a logged in toolbar by default
+
+SVG Background Image: http://stackoverflow.com/questions/3796025/fill-svg-path-element-with-a-background-image
