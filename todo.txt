@@ -1,6 +1,7 @@
 A lot of stuff
 
-@Shamaul, fill in headers for userDb.py , mapUtil.py
+@Shamaul, fill in headers for userDb.py , mapUtil.py (done)
+@Shamaul, actually writing those functions with mongo
 
 Notice to frontend:
        skipped isLoggedIn for some pages that you have to be loggedIn to check, consider making another template that has a logged in toolbar by default

@@ -13,20 +13,64 @@ Returns:
 def isValidAccountInfo( uN, hP ):
     return False
 
+"""
+getUserID(uN)
+Given:
+    uN - username 
+Returns:
+    int of userID for given username
+"""
 def getUserID( uN ):
     return None
 
+"""
+getUsername(uID)
+Given:
+    uID - userID 
+Returns:
+    str of username for given userID
+"""
 def getUsername( uID ):
     return None
 
+"""
+registerAccountInfo(uN)
+Given:
+    uN - username
+    hP - hashed pass
+Returns:
+    boolean of whether account was successfully created
+"""
 def registerAccountInfo( uN, hP ):
-    return None
+    return False
 
+"""
+doesUserExist(uN)
+Given:
+    uN - username 
+Returns:
+    boolean of whether a username is already taken
+"""
 def doesUserExist( uN ):
-    return None
+    return False
 
+"""
+getPass(uID)
+Given:
+    uID - userID 
+Returns:
+    str of password for a given userID
+"""
 def getPass( uID ):
     return None
 
+"""
+changePass(uID, newPass)
+Given:
+    uID - userID
+    newPass - new pass
+Returns:
+    boolean of whether a password was successfully changed
+"""
 def changePass( uID, newPass ):
     return None
