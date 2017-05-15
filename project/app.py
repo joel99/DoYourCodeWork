@@ -40,7 +40,7 @@ def galleryPage(pageNum):
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )    
 
 # == Queried ===================================
-@app.route("/gallery/search/<searchQuery>") #Umm, should this be a post request
+@app.route("/gallery/search/<searchQuery>") #Umm, should this be a GET request
 def gallerySearch(searchQuery):
     data = gallery.search(searchQuery)
     if len(data) == 0:

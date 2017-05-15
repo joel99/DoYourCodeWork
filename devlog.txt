@@ -47,3 +47,10 @@ shamaulD -- 2017-05-14 23:34
 
 - code commented and planned out in userDB and mapUtil
 ==============================================
+
+================================
+joelY -- 2017-05-15 14:46
+
+- editor.js worked on
+- mapEdit.html started
+==============================================
