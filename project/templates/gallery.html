@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+
+<heading>
+  <title> Gallery </title>
+  <link href = "../static/css/bootstrap.min.css" rel="stylesheet">
+</heading>
+
+<body>
+
+<!-- Toolbar changes if user is logged in -->
+{% if not isLoggedIn %}
+
+{% else %}
+
+{% endif %}
+
+<div class= "container">
+
+  {% for mapID in mapLinkData %} <!-- update mapLinkData thing -->
+
+  <form action = "/map/mapID" method = "GET"> <!-- change the mapID thing -->
+    
+  </form>
+
+  {% endfor %}
+
+
+</div>
+
+
+
+
+</body>
+
+</html>
