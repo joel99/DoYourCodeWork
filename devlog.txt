@@ -68,8 +68,15 @@ richardW -- 2017-05-15 23:25
 ==============================================
 
 ================================
-joelY -- 2017-05-15 20:15
+joelY -- 2017-05-16 14:50
 
 - editor.js worked on, mode cancellation works
 - structure added to mapEdit.html, can draw on canvas decently
+==============================================
+
+================================
+jerryC -- 2017-05-16 14:55
+
+- Populate home.html
+- Add primitive function to base toolbar
 ==============================================
