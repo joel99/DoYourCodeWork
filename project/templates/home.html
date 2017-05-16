@@ -2,8 +2,10 @@
 
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
     <title></title>
-     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
   </head>
 
   <body>
@@ -12,20 +14,32 @@
         <div class="toolbar toolbar-container">
             <ul class="toolbar-nav">
                 <!-- Navigation Menu-->
-                <li class="toolbar-button"><a data-toggle="tab" href="#leaderboard">Leaderboard</a></li>
-                {% if logged %}
+                <li class="toolbar-button"><a data-toggle="tab" href="#gallery">Gallery</a></li>
+                {% if isLoggedIn %}
                 <li class="toolbar-button"><a data-toggle="tab" href="#tasks">Tasks</a></li>
                 <li class="toolbar-button"><a data-toggle="tab" href="#store">Store</a></li>
                 <li class="toolbar-button"><a data-toggle="tab" href="#inventory">Inventory</a></li>
                 {% endif %}
 	    </ul>
+
+	    <ul class="toolbar-nav">
+	      <div class="input-group">
+		<input type="text" class="form-control" placeholder="Look for a map!" aria-describedby="basic-addon2">
+		<span class="input-group-addon" id="basic-addon2">Go!</span>
+	      </div>
+	    </ul>
+	    
 	    <ul class="toolbar-nav" style="float: right;">
-                {{message}} {% if not logged %}
-                <button class="toolbar-button" data-toggle="modal" data-target="#signup">Signup</button>
-                <button class="toolbar-button" data-toggle="modal" data-target="#login">Login</button> {% endif %} {% if logged %}
-                <button class="toolbar-button"><a href="/logout">Logout</a></button> {% endif %}
+                {{message}}
+	        {% if not isLoggedIn %}
+		<button class="toolbar-button" data-toggle="modal" data-target="#signup">Signup</button>
+		<button class="toolbar-button" data-toggle="modal" data-target="#login">Login</button>
+		{% endif %}
+		{% if isLoggedIn %}
+		<button class="toolbar-button"><a href="/logout">Logout</a></button>
+		{% endif %}
             </ul>
-            {% if logged %}
+            {% if isLoggedIn %}
             <ul class="toolbar-nav" style="float: right;">
                 <li popover="Gold (18)" popover-placement="bottom" data-trigger="hover" class="toolbar-currency gold">
                     <span class="shop_gold"></span>
@@ -33,7 +47,10 @@
                 </li>
             </ul>
             {% endif %}
-            <!-- Modal -->
+
+
+	    
+            <!-- Login Modal -->
             <div class="modal fade" id="login">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -44,10 +61,10 @@
                             <h4 class="modal-title" id="myModalLabel">Good to see you again!</h4>
                         </div>
                         <div class="modal-body">
-                            <form action="/authenticate/" method="POST">
-                                <input class="form-field" placeholder="Username" type="text" name="user">
+                            <form action="/login/" method="POST">
+                                <input class="form-field" placeholder="Username" type="text" name="username">
                                 <br>
-                                <input class="form-field" placeholder="Password" type="password" name="pass">
+                                <input class="form-field" placeholder="Password" type="password" name="password">
                                 <hr>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <input type="submit" name="login" value="Login" class="btn btn-secondary">
@@ -57,7 +74,9 @@
                 </div>
             </div>
 
-            <!-- Modal -->
+
+
+            <!-- Signup Modal -->
             <div class="modal fade" id="signup">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -68,10 +87,10 @@
                             <h4 class="modal-title" id="myModalLabel">Nice to meet you!</h4>
                         </div>
                         <div class="modal-body">
-                            <form action="/authenticate/" method="POST">
-                                <input class="form-field" placeholder="Username" type="text" name="user">
+                            <form action="/register/" method="POST">
+                                <input class="form-field" placeholder="Username" type="text" name="username">
                                 <br>
-                                <input class="form-field" placeholder="Password" type="password" name="pass">
+                                <input class="form-field" placeholder="Password" type="password" name="password">
                                 <hr>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <input type="submit" name="register" value="Register" class="btn btn-secondary">
@@ -80,6 +99,8 @@
                     </div>
                 </div>
             </div>
+
+	    
         </div>
     </nav>
     Hello
