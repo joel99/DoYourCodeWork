@@ -60,3 +60,10 @@ joelY -- 2017-05-15 20:15
 
 - editor.js worked on (path preliminary setup)
 ==============================================
+
+================================
+richardW -- 2017-05-15 23:25
+
+- added basic (commented out) structure for gallery
+
+==============================================

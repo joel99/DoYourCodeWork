@@ -18,14 +18,22 @@
 
 <div class= "container">
 
-  {% for mapID in mapLinkData %} <!-- update mapLinkData thing -->
+  <ul>
 
-  <form action = "/map/mapID" method = "GET"> <!-- change the mapID thing -->
-    
-  </form>
+      {% for mapID in mapLinkData %} <!-- update mapLinkData thing -->
 
-  {% endfor %}
+      <li>
 
+	<!-- broken code i think 
+	     <form action = "/map/mapID" method = "GET"> <!-- change the mapID thing -->
+
+	<!-- a href= "{{url}}"/>
+      
+      </li>
+
+      {% endfor %}
+
+  </ul>
 
 </div>
 
