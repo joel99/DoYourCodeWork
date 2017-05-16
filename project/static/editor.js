@@ -15,11 +15,11 @@ var pgName = document.getElementById("pgName");
 var page = 1; //default
 
 //GENERAL UI
-var clrBtn = document.getElementById("clearBtn");
+var clrBtn = document.getElementById("clrBtn");
 var delPgBtn = document.getElementById("delPgBtn");
 var delMapBtn = document.getElementById("delMapBtn");
 var pubMapBtn = document.getElementById("pubMapBtn");
-
+var saveMapBtn = document.getElementById("saveMapBtn");
 var addPgBtn = document.getElementById("addPgBtn"); //file upload
 
 //note: might be replaced with better navigation system
@@ -40,6 +40,16 @@ mode = ADD_PATH;
 
 var delElBtn = document.getElementById("delElBtn");
 //TODO: ADD OPTIONS FOR ADD_ UI
+
+var setMode = function(m){
+    mode = m;
+}
+
+var ptBtn = document.getElementById("ptBtn");
+var nodeBtn = document.getElementById("nodeBtn");
+var pathBtn = document.getElementById("pathBtn");
+var cnxnBtn = document.getElementById("cnxnBtn");
+
 
 
 
@@ -108,6 +118,10 @@ var addElement = function(e){
 
     case CONF_PATH:
 	//edits last child
+	console.log("path confirmed");
+	mode = ADD_PATH;
+	//console.log(editorCanvas.lastChild);
+	editorCanvas.lastChild.setAttribute("active", false);
 	break;
     }
 
@@ -120,11 +134,11 @@ var pointClick = function(e){
 
 var pathClick = function(e){
 
-    if (mode == CONF_PATH){
-	mode = DEFAULT;
-	this.setAttribute("active", false);
-    }
+    //if (mode == CONF_PATH){
+//	this.setAttribute("active", false);
+  //  }
     console.log("pathClicked");
+
 }
 
 
@@ -134,8 +148,9 @@ var updateCanvas = function(e){
     for (i = 0; i < editorCanvas.children.length; i++){
 	child = editorCanvas.childNodes[i];
 	
-	if (child.getAttribute("active")){
+	if (child.getAttribute("active") == "true"){
 	    //console.log("thing is active");
+	    //console.log(child);
 	    if (mode == CONF_PATH){//put in switch case, etc
 		child.setAttribute("x2", mousex.toString());
 		child.setAttribute("y2", mousey.toString());
@@ -146,10 +161,39 @@ var updateCanvas = function(e){
 }
 
 
-editorCanvas.addEventListener("click", addElement);
+editorCanvas.addEventListener("click", addElement);//change to canvas click
 editorCanvas.addEventListener("mousemove", updateCanvas);
 //clrBtn.addEventListener("click", clrEditor);
 
 //To do - add restrictions on clicking, status bar (error log)
 //Custom colors and path etc
 //LOAD DATA!
+
+//MORE UI FUNCTIONS
+var setPt = function(){
+    setMode(ADD_PT);
+}
+
+var setPath = function(){
+    setMode(ADD_PATH);
+}
+
+var setNode = function(){
+    setMode(ADD_NODE);
+}
+
+var setCnxn = function(){
+    setMode(ADD_CNXN);
+}
+
+ptBtn.addEventListener("click", setPt);
+pathBtn.addEventListener("click", setPath);
+nodeBtn.addEventListener("click", setNode);
+cnxnBtn.addEventListener("click", setCnxn);
+
+editorCanvas.addEventListener('contextmenu', function(ev) {
+    ev.preventDefault();
+    setMode(DEFAULT);
+    console.log("Canceled!");
+    return false;
+}, false);
