@@ -17,7 +17,7 @@ app.secret_key = "secrets"
 
 @app.route("/")
 def root():
-    return render_template( "index.html", isLoggedIn = isLoggedIn() )
+    return render_template( "home.html", isLoggedIn = isLoggedIn() )
 
 @app.route("/settings/")
 def settings():
