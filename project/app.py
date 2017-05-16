@@ -59,7 +59,7 @@ def mapPage(mapID):
         locked = False
     if isLoggedIn():
         uID = getUserID()
-        if ownsMap(uID, mapID):
+        if mapUtil.ownsMap(uID, mapID):
             owns = True
             locked = False
     #if map is public, all viewers can view it (unlocked)
@@ -69,7 +69,7 @@ def mapPage(mapID):
 #EDITING PAGE
 @app.route("/map/<mapID>/edit")
 def mapEdit(mapID):
-    if not ownsMap(uID, mapID):
+    if not mapUtil.ownsMap(uID, mapID):
         return redirect( url_for('root') )
     else:
         data = mapUtil.getMapData(mapID)
