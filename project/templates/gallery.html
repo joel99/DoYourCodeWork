@@ -24,10 +24,9 @@
 
       <li>
 
-	<!-- broken code i think 
-	<form action = "/map/mapID" method = "GET"/> <!-- change the mapID thing -->
+	<form action = "{{mapID['url']}}" method = "POST"/> <!-- change the mapID thing -->
 
-	<a href= "{{mapID['url']}}"/>
+	<button type="submit" id="mapButton" name="{{mapID['name']}}" value="">{{mapID['name']}}</button>
       
       </li>
 
