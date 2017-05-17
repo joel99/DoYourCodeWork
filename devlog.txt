@@ -82,6 +82,12 @@ jerryC -- 2017-05-16 14:55
 ==============================================
 
 ================================
+shamaulD -- 2017-05-16 14:55
+
+- finished basic userDB.py functions
+==============================================
+
+================================
 joelY -- 2017-05-16 20:05
 
 - point shadow added, editor code refactored, proximity check added for pts
