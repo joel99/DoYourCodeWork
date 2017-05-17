@@ -80,3 +80,9 @@ jerryC -- 2017-05-16 14:55
 - Populate home.html
 - Add primitive function to base toolbar
 ==============================================
+
+================================
+joelY -- 2017-05-16 20:05
+
+- point shadow added, editor code refactored, proximity check added for pts
+==============================================
