@@ -92,3 +92,9 @@ joelY -- 2017-05-16 20:05
 
 - point shadow added, editor code refactored, proximity check added for pts
 ==============================================
+
+================================
+joelY -- 2017-05-18 14:47
+
+- path locks onto nodes, clearing code refactored
+==============================================
