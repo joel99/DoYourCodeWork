@@ -148,7 +148,7 @@ var distance = function(x1,y1,x2,y2){
     return Math.sqrt( Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2) );
 }
 
-var validDistance = function(x, y){
+var validPtDistance = function(x, y){
     
     for (i = 0; i < editorCanvas.children.length; i++){
 	child = editorCanvas.childNodes[i];
@@ -166,12 +166,37 @@ var validDistance = function(x, y){
 
 }
 
+var closestPathDrop = function(x,y){
+
+    var ret = null;
+    var champDist = 10000;
+    const minThresh = 30;
+
+    for (i = 0; i < editorCanvas.children.length; i++){
+	child = editorCanvas.childNodes[i];
+	type = child.getAttribute("customType");
+	if (type == "pt" || type == "cnxn" || type == "node"){
+	    childX = child.getAttribute("cx");
+	    childY = child.getAttribute("cy");
+	    if (distance(x,y,childX, childY) < champDist) {
+		ret = child;
+		champDist = distance(x,y,childX, childY);
+	    }
+	}
+    }
+    
+    if (champDist < minThresh) return ret;
+    else return null;
+
+}
+
 //concerns: runtime
 var canvasClick = function(e){
+
     switch (mode){
     case ADD_PT:
-	if (validDistance(mousex, mousey)){
-	    addPoint(mousex.toString(), mousey.toString());
+	if (validPtDistance(mousex, mousey)){
+	    addPoint(mousex, mousey);
 	    logStatus("pointed added!");
 	}
 	else{
@@ -180,16 +205,31 @@ var canvasClick = function(e){
 	break;	
     
     case ADD_PATH:
-	addPath(mousex.toString(), mousey.toString());
-	mode = CONF_PATH;
+	closest = closestPathDrop(mousex, mousey); 
+	if (closest == null){
+	    logStatus("No anchor node");
+	}
+	else {	
+	    addPath(closest.getAttribute("cx"), closest.getAttribute("cy"));
+	    mode = CONF_PATH;
+	}
+
 	break;
 
     case CONF_PATH:
 	//edits last child
-	mode = ADD_PATH;
-	//console.log(editorCanvas.lastChild);
-	editorCanvas.lastChild.setAttribute("active", false);
+	closest = closestPathDrop(mousex, mousey); 
+	if (closest == null){
+	    logStatus("No anchor node");
+	}
+	else {		   
+	    mode = ADD_PATH;
+	    editorCanvas.lastChild.setAttribute("active", false);
+	}
 	break;
+//    default:
+//	logStatus("Non-functional/default");
+//	break;
     }
 
 }
@@ -209,7 +249,7 @@ var elClick = function(e){
 }
 
 
-editorCanvas.addEventListener("click", canvasClick);//change to canvas click
+editorCanvas.addEventListener("click", canvasClick);
 editorCanvas.addEventListener("mousemove", updateCanvas);
 
 //To do - add restrictions on clicking, status bar (error log)
@@ -219,6 +259,7 @@ editorCanvas.addEventListener("mousemove", updateCanvas);
 //MORE UI FUNCTIONS
 var setModeFunc = function(newMode){
     return function(){
+	clrActive();
 	if (newMode == ADD_PT) editorCanvas.appendChild(makePointShadow(0,0,20));
 	setMode(newMode);
     };
@@ -229,13 +270,7 @@ pathBtn.addEventListener("click", setModeFunc(ADD_PATH));
 nodeBtn.addEventListener("click", setModeFunc(ADD_NODE));
 cnxnBtn.addEventListener("click", setModeFunc(ADD_CNXN));
 
-var rClick = function(e){
-    e.preventDefault();
-    setMode(DEFAULT);
-    logStatus("Canceled!");
-    //clear active shapes
-    //there's probably an easier way of doing this - check later
-    console.log(editorCanvas.children);
+var clrActive = function(){
     for (i = 0; i < editorCanvas.children.length; i++){
 	child = editorCanvas.childNodes[i];
 	console.log(child);
@@ -244,7 +279,16 @@ var rClick = function(e){
 	    break;
 	}
     }
+}
 
+var rClick = function(e){
+    e.preventDefault();
+    setMode(DEFAULT);
+    logStatus("Canceled!");
+    //clear active shapes
+    //there's probably an easier way of doing this - check later
+//    console.log(editorCanvas.children);
+    clrActive();
 }
 
 editorCanvas.addEventListener('contextmenu', rClick, false);
