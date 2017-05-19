@@ -12,11 +12,6 @@ editorCanvas.addEventListener("mousemove", function(e) {
     mousey = e.offsetY;
 });
 
-//Information
-var mapName = document.getElementById("mapName");
-var pgName = document.getElementById("pgName");
-var page = 1; //default
-
 var logStatus = function(s){
     document.getElementById("status").innerHTML = s;
 }
@@ -32,6 +27,30 @@ var addPgBtn = document.getElementById("addPgBtn"); //file upload
 //note: might be replaced with better navigation system
 var nextPgBtn = document.getElementById("nextPgBtn");
 var lastPgBtn = document.getElementById("lastPgBtn");
+
+//Page stuff
+
+//Information
+//var mapName = document.getElementById("mapName");
+//var pgName = document.getElementById("pgName");
+var page = 0; //default
+var maxPages = 0; //load
+
+var addPage = function(){
+    var p = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    p.setAttribute("name", "example");
+    p.setAttribute("num", maxPages + 1);
+    p.setAttribute("isCurrent", "true");
+}
+
+var rmPage = function(){
+    //deletes current page
+    //TODO : ADD PROMPT!
+    
+    editorCanvas.removeChild();
+}
+
+
 
 //EDITOR UI
 const DEFAULT = 1;
@@ -57,7 +76,7 @@ var pathBtn = document.getElementById("pathBtn");
 var cnxnBtn = document.getElementById("cnxnBtn");
 
 //PLEASE NOTE: for proximity concerns, each shape that requires space needs "cx", "cy" attributes
-var makePoint = function(x,y,r){
+var makePt = function(x,y,r){
     
     var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     
@@ -71,14 +90,6 @@ var makePoint = function(x,y,r){
     
     return c;
 
-}
-
-var makePointShadow = function(x,y,r){
-    c = makePoint(x,y,r);
-    c.setAttribute("fill", "grey");
-    c.setAttribute("customType", "ptShadow");
-    c.setAttribute("active", true);
-    return c;
 }
 
 var makePath = function(x1, y1, x2, y2){
@@ -99,26 +110,96 @@ var makePath = function(x1, y1, x2, y2){
     return l;
 }
 
-var makeNode = function(x, y, r){
+var nodePts = function(x, y, r){//triangle
+    r = parseInt(r);
+    t = x + "," + (y-r);
+    bL = Math.floor(x - r * .866) + "," + Math.floor(y + r * .5);
+    bR = Math.floor(x + r * .866) + "," + Math.floor(y + r * .5); 
+    return  t + " " + bL + " " + bR;
+}
 
-    return null;
+var makeNode = function(x, y, r){
+    
+    var t = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+
+    t.setAttribute("cx", x);
+    t.setAttribute("cy", y);
+    t.setAttribute("r", r);
+    t.setAttribute("points", nodePts(x, y, r));
+    t.setAttribute("customType", "node");
+    t.addEventListener("click", elClick);
+
+    return t;
     
 }
 
-var makeCnxn = function(){
+var cnxnPts = function(x, y, r){//square
+    r = parseInt(r);
+    tL = (x - r) + "," + (y - r);
+    tR = (x + r) + "," + (y - r);
+    bL = (x - r) + "," + (y + r);
+    bR = (x + r) + "," + (y + r);
+    return tL + " " + tR + " " + bR + " " + bL;
+}
 
-    return null;
+var makeCnxn = function(x, y, r){
+    
+    var s = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+
+    s.setAttribute("cx", x);
+    s.setAttribute("cy", y);
+    s.setAttribute("r", r);
+    s.setAttribute("points", cnxnPts(x, y, r));
+    s.setAttribute("customType", "cnxn");
+    s.addEventListener("click", elClick);
+
+    return s;
 
 }
 
-var addPoint = function(x, y){
-    editorCanvas.appendChild(makePoint(x,y,"20"));
+var makeShadow = function(x, y, r, mode){
+    s = null;
+    switch(mode){
+    case ADD_PT:
+	s = makePt(x, y, r);
+	break;
+    case ADD_NODE:
+	s = makeNode(x, y, r);
+	break;
+    case ADD_CNXN:
+	s = makeCnxn(x, y, r);
+	break;
+    }
+
+    s.setAttribute("fill", "grey");
+    s.setAttribute("customType", s.getAttribute("customType") + "Shadow");
+    s.setAttribute("active", true);
+    s.setAttribute("visibility", "hidden");   
+
+    return s;
+
 }
 
-var addPath = function(x, y){
-    editorCanvas.appendChild(makePath(x, y, mousex.toString(), mousey.toString()));
-}
 
+
+
+var addEl = function(x, y, type){
+    switch(type){
+    case ADD_PT:
+	child = makePt( x, y, 20 );
+	break;
+    case ADD_PATH:
+	child = makePath( x, y, mousex, mousey );
+	break;
+    case ADD_NODE:
+	child = makeNode( x, y, 20 );
+	break;
+    case ADD_CNXN:
+	child = makeCnxn( x, y, 20 );
+	break;
+    }
+    editorCanvas.appendChild(child);
+}
 
 var updateCanvas = function(e){
     //console.log("mouse moved");
@@ -129,14 +210,30 @@ var updateCanvas = function(e){
 	if (child.getAttribute("active") == "true"){
 	    switch (mode){
 	    case CONF_PATH:
-		child.setAttribute("x2", mousex.toString());
-		child.setAttribute("y2", mousey.toString());
+		//if (child.getAttribute("x2") != mousex.toString()){
+		//    console.log("Unfair!");
+		//}
+		child.setAttribute("x2", mousex);
+		child.setAttribute("y2", mousey);
 		break;
-	    case ADD_PT:
-		child.setAttribute("cx", mousex.toString());
-		child.setAttribute("cy", mousey.toString());
+	    case ADD_PT:		
+		child.setAttribute("visibility", "visible");
+		child.setAttribute("cx", mousex);
+		child.setAttribute("cy", mousey);
 		break;
-	    }
+	    case ADD_CNXN:
+		child.setAttribute("visibility", "visible");
+		child.setAttribute("cx", mousex);
+		child.setAttribute("cy", mousey);
+		child.setAttribute("points", cnxnPts(mousex, mousey, child.getAttribute("r")));	
+		break;
+	    case ADD_NODE:		
+		child.setAttribute("visibility", "visible");
+		child.setAttribute("cx", mousex);
+		child.setAttribute("cy", mousey);
+		child.setAttribute("points", nodePts(mousex, mousey, child.getAttribute("r")));
+		break;
+	    }	    
 
 	    
 	}
@@ -145,6 +242,10 @@ var updateCanvas = function(e){
 }
 
 var distance = function(x1,y1,x2,y2){
+    x1 = parseInt(x1);
+    y1 = parseInt(y1);
+    x2 = parseInt(x2);
+    y2 = parseInt(y2);
     return Math.sqrt( Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2) );
 }
 
@@ -156,9 +257,8 @@ var validPtDistance = function(x, y){
 	if (type == "pt" || type == "cnxn" || type == "node"){
 	    childX = child.getAttribute("cx");
 	    childY = child.getAttribute("cy");
-	    if (distance(x,y,childX, childY) < 30) {
+	    if (distance(x,y,childX, childY) < 30)
 		return false;
-	    }
 	}
     }
     
@@ -195,22 +295,24 @@ var canvasClick = function(e){
 
     switch (mode){
     case ADD_PT:
+    case ADD_NODE:
+    case ADD_CNXN:
 	if (validPtDistance(mousex, mousey)){
-	    addPoint(mousex, mousey);
-	    logStatus("pointed added!");
+	    addEl(mousex, mousey, mode);
+	    logStatus("something added!");
 	}
 	else{
 	    logStatus("too close");
 	}
 	break;	
-    
+
     case ADD_PATH:
 	closest = closestPathDrop(mousex, mousey); 
 	if (closest == null){
 	    logStatus("No anchor node");
 	}
 	else {	
-	    addPath(closest.getAttribute("cx"), closest.getAttribute("cy"));
+	    addEl(closest.getAttribute("cx"), closest.getAttribute("cy"), ADD_PATH);
 	    mode = CONF_PATH;
 	}
 
@@ -224,12 +326,19 @@ var canvasClick = function(e){
 	}
 	else {		   
 	    mode = ADD_PATH;
-	    editorCanvas.lastChild.setAttribute("active", false);
+	    line = editorCanvas.lastChild;
+	    line.setAttribute("active", false);
+	    line.setAttribute("x2", closest.getAttribute("cx"));
+	    line.setAttribute("y2", closest.getAttribute("cy"));
+	    if (distance(line.getAttribute("x1"), line.getAttribute("y1"),
+			 line.getAttribute("x2"), line.getAttribute("y2")) < 5){
+		editorCanvas.removeChild(line);//prevent self-attachment
+	    }
 	}
 	break;
-//    default:
-//	logStatus("Non-functional/default");
-//	break;
+    default:
+	logStatus("Non-functional/default");
+	break;
     }
 
 }
@@ -260,7 +369,11 @@ editorCanvas.addEventListener("mousemove", updateCanvas);
 var setModeFunc = function(newMode){
     return function(){
 	clrActive();
-	if (newMode == ADD_PT) editorCanvas.appendChild(makePointShadow(0,0,20));
+	if (newMode == ADD_PT ||
+	    newMode == ADD_CNXN ||
+	    newMode == ADD_NODE)
+	    editorCanvas.appendChild(makeShadow(0, 0, 20, newMode));
+
 	setMode(newMode);
     };
 }
@@ -293,6 +406,9 @@ var rClick = function(e){
 
 editorCanvas.addEventListener('contextmenu', rClick, false);
 
+//OTHER THINGS
+//==================================================================
+
 
 //Needs to be edited to remove dependencies
 var clrEditor = function(){
@@ -300,9 +416,6 @@ var clrEditor = function(){
 	editorCanvas.removeChild(editorCanvas.lastChild);
     }
 };
-
-
-
 
 
 clrBtn.addEventListener("click", clrEditor);

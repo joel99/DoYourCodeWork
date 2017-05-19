@@ -98,3 +98,11 @@ joelY -- 2017-05-18 14:47
 
 - path locks onto nodes, clearing code refactored
 ==============================================
+
+================================
+joelY -- 2017-05-18 20:47
+
+- code refactored, needs more refactoring
+- active ui set
+- page work started
+==============================================
