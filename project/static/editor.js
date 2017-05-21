@@ -1,6 +1,13 @@
 //Rough organization
 //updateCanvas, canvasClick, and elClick are most important funcitons. everything else just helps
 
+//ROAD MAP for JOEL:
+//add id system for elements
+//add monitor system for elements
+//add display info for page
+//add file upload/download for background images
+//add panning/moving via public library
+
 var editorCanvas = document.getElementById("editorCanvas");
 var width = editorCanvas.getAttribute("width");
 var height = editorCanvas.getAttribute("height");
@@ -30,27 +37,132 @@ var lastPgBtn = document.getElementById("lastPgBtn");
 
 //Page stuff
 
+var monitor = document.getElementById("monitor");
+
 //Information
 //var mapName = document.getElementById("mapName");
 //var pgName = document.getElementById("pgName");
 var page = 0; //default
-var maxPages = 0; //load
+var totalPages = 0; //load
+
+
+var getActivePage = function(){
+    for (i = 0; i < editorCanvas.children.length; i++){
+	var child = editorCanvas.childNodes[i];
+	if ( child.getAttribute("isCurrent") == "true" ){
+	    return child;
+	}
+    }
+    return null;
+}
+
+
+var getPage = function(num){
+    for (i = 0; i < editorCanvas.children.length; i++){
+	var child = editorCanvas.childNodes[i];
+	if ( child.getAttribute("num") == num ){
+	    return child;
+	}
+    }
+    return null;    
+}
+
+var setPage = function(num){
+
+    clrActive();
+    clrMonitor();
+   
+    var page = getActivePage();
+    var i;
+    var child;
+    for (i = 0; i < page.children.length; i++){
+	var child = page.childNodes[i];
+	child.setAttribute("visibility", "hidden");
+    }
+
+    page.setAttribute("isCurrent", "false");
+    getPage(num).setAttribute("isCurrent", "true");
+
+    clrActive();
+
+    page = getActivePage();
+    for (i = 0; i < page.children.length; i++){
+	var child = page.childNodes[i];
+	child.setAttribute("visibility", "visible");
+    }
+    
+}
+
+var toNextPage = function(){
+    var page = getActivePage();
+    if (parseInt(page.getAttribute("num")) != totalPages){
+	setPage(parseInt(page.getAttribute("num")) + 1);
+    }
+    else{
+	logStatus("You're on the last page");
+    }
+}
+
+var toPrevPage = function(){
+    var page = getActivePage();
+    if (parseInt(page.getAttribute("num")) != 1){
+	setPage(parseInt(page.getAttribute("num")) - 1);
+    }
+    else {
+	logStatus("You're on the first page");
+    }
+}
 
 var addPage = function(){
+
     var p = document.createElementNS("http://www.w3.org/2000/svg", "g");
     p.setAttribute("name", "example");
-    p.setAttribute("num", maxPages + 1);
-    p.setAttribute("isCurrent", "true");
+    p.setAttribute("num", totalPages + 1);
+
+    if (totalPages == 0){
+	p.setAttribute("isCurrent", "true");
+	totalPages += 1;
+	editorCanvas.appendChild(p);	
+    }
+    else if (getActivePage().getAttribute("num") == totalPages){//there is already a page, and this is the last page
+	editorCanvas.appendChild(p);
+	totalPages += 1;	
+	toNextPage();
+    }
+
 }
 
-var rmPage = function(){
+addPage();
+
+var delPage = function(){
     //deletes current page
     //TODO : ADD PROMPT!
-    
-    editorCanvas.removeChild();
+    if (totalPages == 0) logStatus("can't remove page");
+    else {
+	logStatus("page removed");
+	var curPage = getActivePage();
+	if (totalPages == 1){
+	    //disable thing...
+	}
+	else{
+	    if (curPage.getAttribute("num") == 1){
+		//doubly inefficient! for sake of saving code!
+		setPage(2);
+		getPage(2).setAttribute("num", 1);
+		
+	    }
+	    else{
+		toPrevPage();//inefficient, just remove...
+		for (i = parseInt(curPage.getAttribute("num")); i < editorCanvas.children.length; i++){
+		    var child = editorCanvas.childNodes[i];
+		    child.setAttribute("num", i);
+		}
+	    } //reorder pages	    
+	}
+	editorCanvas.removeChild(curPage);
+	totalPages -= 1;
+    }
 }
-
-
 
 //EDITOR UI
 const DEFAULT = 1;
@@ -87,9 +199,9 @@ var makePt = function(x,y,r){
     c.setAttribute("customType", "pt");
 
     c.addEventListener("click", elClick);
-    
-    return c;
 
+    return c;
+    
 }
 
 var makePath = function(x1, y1, x2, y2){
@@ -112,9 +224,9 @@ var makePath = function(x1, y1, x2, y2){
 
 var nodePts = function(x, y, r){//triangle
     r = parseInt(r);
-    t = x + "," + (y-r);
-    bL = Math.floor(x - r * .866) + "," + Math.floor(y + r * .5);
-    bR = Math.floor(x + r * .866) + "," + Math.floor(y + r * .5); 
+    var t = x + "," + (y-r);
+    var bL = Math.floor(x - r * .866) + "," + Math.floor(y + r * .5);
+    var bR = Math.floor(x + r * .866) + "," + Math.floor(y + r * .5); 
     return  t + " " + bL + " " + bR;
 }
 
@@ -135,10 +247,10 @@ var makeNode = function(x, y, r){
 
 var cnxnPts = function(x, y, r){//square
     r = parseInt(r);
-    tL = (x - r) + "," + (y - r);
-    tR = (x + r) + "," + (y - r);
-    bL = (x - r) + "," + (y + r);
-    bR = (x + r) + "," + (y + r);
+    var tL = (x - r) + "," + (y - r);
+    var tR = (x + r) + "," + (y - r);
+    var bL = (x - r) + "," + (y + r);
+    var bR = (x + r) + "," + (y + r);
     return tL + " " + tR + " " + bR + " " + bL;
 }
 
@@ -158,7 +270,7 @@ var makeCnxn = function(x, y, r){
 }
 
 var makeShadow = function(x, y, r, mode){
-    s = null;
+    var s = null;
     switch(mode){
     case ADD_PT:
 	s = makePt(x, y, r);
@@ -184,6 +296,7 @@ var makeShadow = function(x, y, r, mode){
 
 
 var addEl = function(x, y, type){
+    var child;
     switch(type){
     case ADD_PT:
 	child = makePt( x, y, 20 );
@@ -198,14 +311,14 @@ var addEl = function(x, y, type){
 	child = makeCnxn( x, y, 20 );
 	break;
     }
-    editorCanvas.appendChild(child);
+    getActivePage().appendChild(child);
 }
 
 var updateCanvas = function(e){
-    //console.log("mouse moved");
     
-    for (i = 0; i < editorCanvas.children.length; i++){
-	child = editorCanvas.childNodes[i];
+    var page = getActivePage();
+    for (i = 0; i < page.children.length; i++){
+	var child = page.childNodes[i];
 	
 	if (child.getAttribute("active") == "true"){
 	    switch (mode){
@@ -250,10 +363,10 @@ var distance = function(x1,y1,x2,y2){
 }
 
 var validPtDistance = function(x, y){
-    
-    for (i = 0; i < editorCanvas.children.length; i++){
-	child = editorCanvas.childNodes[i];
-	type = child.getAttribute("customType");
+    var page = getActivePage();
+    for (i = 0; i < page.children.length; i++){
+	var child = page.childNodes[i];
+	var type = child.getAttribute("customType");
 	if (type == "pt" || type == "cnxn" || type == "node"){
 	    childX = child.getAttribute("cx");
 	    childY = child.getAttribute("cy");
@@ -271,10 +384,11 @@ var closestPathDrop = function(x,y){
     var ret = null;
     var champDist = 10000;
     const minThresh = 30;
-
-    for (i = 0; i < editorCanvas.children.length; i++){
-	child = editorCanvas.childNodes[i];
-	type = child.getAttribute("customType");
+    var page = getActivePage();
+    
+    for (i = 0; i < page.children.length; i++){
+	var child = page.childNodes[i];
+	var type = child.getAttribute("customType");
 	if (type == "pt" || type == "cnxn" || type == "node"){
 	    childX = child.getAttribute("cx");
 	    childY = child.getAttribute("cy");
@@ -320,19 +434,19 @@ var canvasClick = function(e){
 
     case CONF_PATH:
 	//edits last child
-	closest = closestPathDrop(mousex, mousey); 
+	var closest = closestPathDrop(mousex, mousey); 
 	if (closest == null){
 	    logStatus("No anchor node");
 	}
 	else {		   
 	    mode = ADD_PATH;
-	    line = editorCanvas.lastChild;
+	    var line = getActivePage().lastChild;
 	    line.setAttribute("active", false);
 	    line.setAttribute("x2", closest.getAttribute("cx"));
 	    line.setAttribute("y2", closest.getAttribute("cy"));
 	    if (distance(line.getAttribute("x1"), line.getAttribute("y1"),
 			 line.getAttribute("x2"), line.getAttribute("y2")) < 5){
-		editorCanvas.removeChild(line);//prevent self-attachment
+		getActivePage().removeChild(line);//prevent self-attachment
 	    }
 	}
 	break;
@@ -346,12 +460,16 @@ var canvasClick = function(e){
 var elClick = function(e){
     switch (this.getAttribute("customType")){
     case "pt":
+	updateMonitor("Name", this.getAttribute("name"));
 	break;
     case "path":
+	updateMonitor("Name", this.getAttribute("name"));
 	break;
     case "node":
+	updateMonitor("Name", this.getAttribute("name"));
 	break;
     case "cnxn":
+	updateMonitor("Name", this.getAttribute("name"));
 	break;
     }
     console.log(this.getAttribute("customType") + " clicked.");
@@ -371,9 +489,10 @@ var setModeFunc = function(newMode){
 	clrActive();
 	if (newMode == ADD_PT ||
 	    newMode == ADD_CNXN ||
-	    newMode == ADD_NODE)
-	    editorCanvas.appendChild(makeShadow(0, 0, 20, newMode));
-
+	    newMode == ADD_NODE){
+	    var page = getActivePage();
+	    page.appendChild(makeShadow(0, 0, 20, newMode));
+	}
 	setMode(newMode);
     };
 }
@@ -384,11 +503,11 @@ nodeBtn.addEventListener("click", setModeFunc(ADD_NODE));
 cnxnBtn.addEventListener("click", setModeFunc(ADD_CNXN));
 
 var clrActive = function(){
-    for (i = 0; i < editorCanvas.children.length; i++){
-	child = editorCanvas.childNodes[i];
-	console.log(child);
+    var page = getActivePage();
+    for (i = 0; i < page.children.length; i++){
+	var child = page.childNodes[i];
 	if ( child.getAttribute("active") == "true" ){
-	    editorCanvas.removeChild(child);
+	    page.removeChild(child);
 	    break;
 	}
     }
@@ -412,10 +531,24 @@ editorCanvas.addEventListener('contextmenu', rClick, false);
 
 //Needs to be edited to remove dependencies
 var clrEditor = function(){
-    while (editorCanvas.hasChildNodes()){
-	editorCanvas.removeChild(editorCanvas.lastChild);
+    var page = getActivePage()
+    while (page.hasChildNodes()){
+	page.removeChild(page.lastChild);
     }
 };
 
+var clrMonitor = function(){
+    monitor.innerHTML = "";
+}
+
+var updateMonitor = function(s1, s2){
+    var s = document.createElement("p");
+    s.innerHTML = s1 + ":" + s2;
+    monitor.appendChild(s);
+}
 
 clrBtn.addEventListener("click", clrEditor);
+addPgBtn.addEventListener("click", addPage);
+delPgBtn.addEventListener("click", delPage);
+nextPgBtn.addEventListener("click", toNextPage);
+prevPgBtn.addEventListener("click", toPrevPage);
