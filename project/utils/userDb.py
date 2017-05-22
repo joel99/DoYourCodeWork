@@ -9,7 +9,6 @@ db = server.dycw
 
 cU = db.users #collection of users
 
-cM = db.maps #collection of maps
 
 #User data functions
 
