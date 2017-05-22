@@ -7,6 +7,11 @@
 //add display info for page
 //add file upload/download for background images
 //add panning/moving via public library
+//pretty submission areas
+//refactor page loading scenario
+
+//Notes:
+//you can edit map name in main dashboard AND map edit page (for user friendliness)
 
 var editorCanvas = document.getElementById("editorCanvas");
 var width = editorCanvas.getAttribute("width");
@@ -36,7 +41,8 @@ var nextPgBtn = document.getElementById("nextPgBtn");
 var lastPgBtn = document.getElementById("lastPgBtn");
 
 //Page stuff
-
+var mapTitle = document.getElementById("mapTitle");
+var pgTitle = document.getElementById("pgTitle");
 var monitor = document.getElementById("monitor");
 
 //Information
@@ -44,7 +50,7 @@ var monitor = document.getElementById("monitor");
 //var pgName = document.getElementById("pgName");
 var page = 0; //default
 var totalPages = 0; //load
-
+var idCount = 0;
 
 var getActivePage = function(){
     for (i = 0; i < editorCanvas.children.length; i++){
@@ -71,7 +77,7 @@ var setPage = function(num){
 
     clrActive();
     clrMonitor();
-   
+    
     var page = getActivePage();
     var i;
     var child;
@@ -82,10 +88,11 @@ var setPage = function(num){
 
     page.setAttribute("isCurrent", "false");
     getPage(num).setAttribute("isCurrent", "true");
-
+    
     clrActive();
-
     page = getActivePage();
+    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
+
     for (i = 0; i < page.children.length; i++){
 	var child = page.childNodes[i];
 	child.setAttribute("visibility", "visible");
@@ -143,6 +150,7 @@ var delPage = function(){
 	var curPage = getActivePage();
 	if (totalPages == 1){
 	    //disable thing...
+	    pgTitle.innerHTML = "NO PAGES LEFT.";
 	}
 	else{
 	    if (curPage.getAttribute("num") == 1){
@@ -188,6 +196,7 @@ var pathBtn = document.getElementById("pathBtn");
 var cnxnBtn = document.getElementById("cnxnBtn");
 
 //PLEASE NOTE: for proximity concerns, each shape that requires space needs "cx", "cy" attributes
+
 var makePt = function(x,y,r){
     
     var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -292,9 +301,6 @@ var makeShadow = function(x, y, r, mode){
 
 }
 
-
-
-
 var addEl = function(x, y, type){
     var child;
     switch(type){
@@ -317,41 +323,45 @@ var addEl = function(x, y, type){
 var updateCanvas = function(e){
     
     var page = getActivePage();
-    for (i = 0; i < page.children.length; i++){
-	var child = page.childNodes[i];
+    if (page == null){
 	
-	if (child.getAttribute("active") == "true"){
-	    switch (mode){
-	    case CONF_PATH:
-		//if (child.getAttribute("x2") != mousex.toString()){
-		//    console.log("Unfair!");
-		//}
-		child.setAttribute("x2", mousex);
-		child.setAttribute("y2", mousey);
-		break;
-	    case ADD_PT:		
-		child.setAttribute("visibility", "visible");
-		child.setAttribute("cx", mousex);
-		child.setAttribute("cy", mousey);
-		break;
-	    case ADD_CNXN:
-		child.setAttribute("visibility", "visible");
-		child.setAttribute("cx", mousex);
-		child.setAttribute("cy", mousey);
-		child.setAttribute("points", cnxnPts(mousex, mousey, child.getAttribute("r")));	
-		break;
-	    case ADD_NODE:		
-		child.setAttribute("visibility", "visible");
-		child.setAttribute("cx", mousex);
-		child.setAttribute("cy", mousey);
-		child.setAttribute("points", nodePts(mousex, mousey, child.getAttribute("r")));
-		break;
-	    }	    
-
+    }
+    else{
+	for (i = 0; i < page.children.length; i++){
+	    var child = page.childNodes[i];
 	    
+	    if (child.getAttribute("active") == "true"){
+		switch (mode){
+		case CONF_PATH:
+		    //if (child.getAttribute("x2") != mousex.toString()){
+		    //    console.log("Unfair!");
+		    //}
+		    child.setAttribute("x2", mousex);
+		    child.setAttribute("y2", mousey);
+		    break;
+		case ADD_PT:		
+		    child.setAttribute("visibility", "visible");
+		    child.setAttribute("cx", mousex);
+		    child.setAttribute("cy", mousey);
+		    break;
+		case ADD_CNXN:
+		    child.setAttribute("visibility", "visible");
+		    child.setAttribute("cx", mousex);
+		    child.setAttribute("cy", mousey);
+		    child.setAttribute("points", cnxnPts(mousex, mousey, child.getAttribute("r")));	
+		    break;
+		case ADD_NODE:		
+		    child.setAttribute("visibility", "visible");
+		    child.setAttribute("cx", mousex);
+		    child.setAttribute("cy", mousey);
+		    child.setAttribute("points", nodePts(mousex, mousey, child.getAttribute("r")));
+		    break;
+		}	    
+
+		
+	    }
 	}
     }
-    
 }
 
 var distance = function(x1,y1,x2,y2){
@@ -504,12 +514,14 @@ cnxnBtn.addEventListener("click", setModeFunc(ADD_CNXN));
 
 var clrActive = function(){
     var page = getActivePage();
+    if (page != null){
     for (i = 0; i < page.children.length; i++){
 	var child = page.childNodes[i];
 	if ( child.getAttribute("active") == "true" ){
 	    page.removeChild(child);
 	    break;
 	}
+    }
     }
 }
 
@@ -519,13 +531,13 @@ var rClick = function(e){
     logStatus("Canceled!");
     //clear active shapes
     //there's probably an easier way of doing this - check later
-//    console.log(editorCanvas.children);
+    //    console.log(editorCanvas.children);
     clrActive();
 }
 
 editorCanvas.addEventListener('contextmenu', rClick, false);
 
-//OTHER THINGS
+//Monitors
 //==================================================================
 
 
@@ -547,8 +559,27 @@ var updateMonitor = function(s1, s2){
     monitor.appendChild(s);
 }
 
+//var updateTitle = function(s1, s2){}
+
 clrBtn.addEventListener("click", clrEditor);
 addPgBtn.addEventListener("click", addPage);
 delPgBtn.addEventListener("click", delPage);
 nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
+
+
+//LOADING PAGE : needs refactoring
+var loadMap = function(){//inital script
+
+    //    if (dataExists()){
+    //    }
+    //    else{ //default loading
+    mapTitle.innerHTML = "SAMPLE MAP";    
+    page = getActivePage();    
+    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
+    
+    //}
+
+}
+
+loadMap();
