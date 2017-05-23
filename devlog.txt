@@ -134,3 +134,9 @@ joelY -- 2017-05-22 22:43
 - delete element started
 - monitor enhanced
 ==============================================
+
+================================
+joelY -- 2017-05-22 15:30
+
+- delete element dependencies addressed
+==============================================

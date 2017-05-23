@@ -2,14 +2,10 @@
 //updateCanvas, canvasClick, and elClick are most important funcitons. everything else just helps
 
 //ROAD MAP for JOEL:
-//clear cnxn and page dependencies on remove element
-//add id system for elements
-//add monitor system for elements
-//add display info for page
+//submission fields for editable attributes
 //add file upload/download for background images
 //add panning/moving via public library
 //pretty submission areas
-//refactor page loading scenario
 
 //Notes:
 //you can edit map name in main dashboard AND map edit page (for user friendliness)
@@ -30,16 +26,6 @@ var logStatus = function(s){
 }
 
 //GENERAL UI
-var clrBtn = document.getElementById("clrBtn");
-var delPgBtn = document.getElementById("delPgBtn");
-var delMapBtn = document.getElementById("delMapBtn");
-var pubMapBtn = document.getElementById("pubMapBtn");
-var saveMapBtn = document.getElementById("saveMapBtn");
-var addPgBtn = document.getElementById("addPgBtn"); //file upload
-
-//note: might be replaced with better navigation system
-var nextPgBtn = document.getElementById("nextPgBtn");
-var lastPgBtn = document.getElementById("lastPgBtn");
 
 //Page stuff
 var mapTitle = document.getElementById("mapTitle");
@@ -133,6 +119,7 @@ var addPage = function(){
 	editorCanvas.appendChild(p);	
     }
     else if (getActivePage().getAttribute("num") == totalPages){//there is already a page, and this is the last page
+	console.log("nice");
 	editorCanvas.appendChild(p);
 	totalPages += 1;	
 	toNextPage();
@@ -141,7 +128,7 @@ var addPage = function(){
 }
 
 var delPage = function(){
-    //deletes current page
+
     //TODO : ADD PROMPT!
     if (totalPages == 0) logStatus("can't remove page");
     else {
@@ -166,6 +153,13 @@ var delPage = function(){
 		}
 	    } //reorder pages	    
 	}
+	
+	for (i = 0; i < curPage.children.length; i++){
+	    var child = curPage.childNodes[i];
+	    if (child.getAttribute("customType") == "cnxn")
+		clrCnxn(child);
+	}
+
 	editorCanvas.removeChild(curPage);
 	totalPages -= 1;
     }
@@ -187,12 +181,6 @@ var mode = DEFAULT; //edited with other buttons on editor page
 var setMode = function(m){
     mode = m;
 }
-
-var ptBtn = document.getElementById("ptBtn");
-var nodeBtn = document.getElementById("nodeBtn");
-var pathBtn = document.getElementById("pathBtn");
-var cnxnBtn = document.getElementById("cnxnBtn");
-var delElBtn = document.getElementById("delElBtn");
 
 //PLEASE NOTE: for proximity concerns, each shape that requires space needs "cx", "cy" attributes
 
@@ -508,9 +496,52 @@ var delEl = function(){
     if (clickedEl != null){
 	//remove associations
 	var page = getActivePage();
+	switch (clickedEl.getAttribute("customType")){
+	    case "node":
+	    case "pt":
+	    case "cnxn":
+	    for (i = 0; i < page.children.length; i++){
+		var child = page.childNodes[i];
+		if (child.getAttribute("customType") == "path"){
+		    if (child.getAttribute("p1") == clickedEl.getAttribute("id") ||
+		        child.getAttribute("p2") == clickedEl.getAttribute("id") )
+			page.removeChild(child);
+		    }
+	    }
+	    break;
+	}
+
+	if (clickedEl.getAttribute("customType") == "cnxn")
+	    clrCnxn(clickedEl);
+
 	page.removeChild(clickedEl);
+	for (i = 0; i < page.children.length; i++){
+	    var child = page.childNodes[i];
+	    var type = child.getAttribute("customType");
+	    if (type == "pt" || type == "cnxn" || type == "node"){
+		childX = child.getAttribute("cx");
+		childY = child.getAttribute("cy");
+		if (distance(x,y,childX, childY) < champDist) {
+		    ret = child;
+		    champDist = distance(x,y,childX, childY);
+		}
+	    }
+	}
 	clickedEl = null;
 	clrMonitor();
+    }
+}
+
+var clrCnxn = function(cnxn){
+    tarID = cnxn.getAttribute("link");
+    for (i = 0; i < editorCanvas.children.length; i++){
+	var page = editorCanvas.childNodes[i];
+	for (j = 0; j < page.children.length; j++){
+	    var child = page.childNodes[j];
+	    if (child.getAttribute("id") == tarID){
+		child.setAttribute("link", "unlinked");
+	    }
+	}
     }
 }
 
@@ -593,11 +624,11 @@ var loadMap = function(){//inital script
     //    }
     //    else{ //default loading
     mapTitle.innerHTML = "SAMPLE MAP";
+    totalPages = 0; //load
+    idCount = 0; //simple id scheme, just count up every time element is made
     addPage();
     page = getActivePage();    
     pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
-    totalPages = 0; //load
-    idCount = 0; //simple id scheme, just count up every time element is made
     mode = DEFAULT;
     //}
 
@@ -606,6 +637,26 @@ var loadMap = function(){//inital script
 loadMap();
 
 //Buttons/Event Listeners
+var ptBtn = document.getElementById("ptBtn");
+var nodeBtn = document.getElementById("nodeBtn");
+var pathBtn = document.getElementById("pathBtn");
+var cnxnBtn = document.getElementById("cnxnBtn");
+var delElBtn = document.getElementById("delElBtn");
+
+var clrBtn = document.getElementById("clrBtn");
+var delPgBtn = document.getElementById("delPgBtn");
+var delMapBtn = document.getElementById("delMapBtn");
+var pubMapBtn = document.getElementById("pubMapBtn");
+var saveMapBtn = document.getElementById("saveMapBtn");
+var addPgBtn = document.getElementById("addPgBtn"); //file upload
+
+//note: might be replaced with better navigation system
+var nextPgBtn = document.getElementById("nextPgBtn");
+var lastPgBtn = document.getElementById("lastPgBtn");
+
+var saveMapBtn = document.getElementById("saveMapBtn");
+var pubMapBtn = document.getElementById("pubMapBtn");
+
 editorCanvas.addEventListener("click", canvasClick);
 editorCanvas.addEventListener("mousemove", updateCanvas);
 editorCanvas.addEventListener('contextmenu', rClick, false);
@@ -621,3 +672,4 @@ delPgBtn.addEventListener("click", delPage);
 nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
+
