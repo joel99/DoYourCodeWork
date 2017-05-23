@@ -125,3 +125,12 @@ joelY -- 2017-05-22 15:14
 
 - page/map title added
 ==============================================
+
+================================
+joelY -- 2017-05-22 22:43
+
+- ids added to elements
+- page initialization functionalized, code organized
+- delete element started
+- monitor enhanced
+==============================================

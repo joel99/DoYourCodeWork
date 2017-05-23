@@ -48,9 +48,9 @@ var monitor = document.getElementById("monitor");
 //Information
 //var mapName = document.getElementById("mapName");
 //var pgName = document.getElementById("pgName");
-var page = 0; //default
+
 var totalPages = 0; //load
-var idCount = 0;
+var idCount = 0; //simple id scheme, just count up every time element is made
 
 var getActivePage = function(){
     for (i = 0; i < editorCanvas.children.length; i++){
@@ -139,8 +139,6 @@ var addPage = function(){
 
 }
 
-addPage();
-
 var delPage = function(){
     //deletes current page
     //TODO : ADD PROMPT!
@@ -183,7 +181,6 @@ const CONF_PATH = 7;
 
 var mode = DEFAULT; //edited with other buttons on editor page
 
-var delElBtn = document.getElementById("delElBtn");
 //TODO: ADD OPTIONS FOR ADD_ UI
 
 var setMode = function(m){
@@ -194,6 +191,7 @@ var ptBtn = document.getElementById("ptBtn");
 var nodeBtn = document.getElementById("nodeBtn");
 var pathBtn = document.getElementById("pathBtn");
 var cnxnBtn = document.getElementById("cnxnBtn");
+var delElBtn = document.getElementById("delElBtn");
 
 //PLEASE NOTE: for proximity concerns, each shape that requires space needs "cx", "cy" attributes
 
@@ -206,8 +204,6 @@ var makePt = function(x,y,r){
     c.setAttribute("r", r);
     c.setAttribute("fill", "black");
     c.setAttribute("customType", "pt");
-
-    c.addEventListener("click", elClick);
 
     return c;
     
@@ -225,8 +221,6 @@ var makePath = function(x1, y1, x2, y2){
     l.setAttribute("stroke-width", "4");
     l.setAttribute("customType", "path");
     l.setAttribute("active", true);
-
-    l.addEventListener("click", elClick);
     
     return l;
 }
@@ -248,7 +242,6 @@ var makeNode = function(x, y, r){
     t.setAttribute("r", r);
     t.setAttribute("points", nodePts(x, y, r));
     t.setAttribute("customType", "node");
-    t.addEventListener("click", elClick);
 
     return t;
     
@@ -263,7 +256,7 @@ var cnxnPts = function(x, y, r){//square
     return tL + " " + tR + " " + bR + " " + bL;
 }
 
-var makeCnxn = function(x, y, r){
+var makeCnxn = function(x, y, r){//forbid "unlinked" name
     
     var s = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
 
@@ -272,8 +265,8 @@ var makeCnxn = function(x, y, r){
     s.setAttribute("r", r);
     s.setAttribute("points", cnxnPts(x, y, r));
     s.setAttribute("customType", "cnxn");
-    s.addEventListener("click", elClick);
-
+    s.setAttribute("link", "unlinked");
+    
     return s;
 
 }
@@ -306,18 +299,28 @@ var addEl = function(x, y, type){
     switch(type){
     case ADD_PT:
 	child = makePt( x, y, 20 );
+	child.addEventListener("click", elClick);
 	break;
     case ADD_PATH:
 	child = makePath( x, y, mousex, mousey );
 	break;
     case ADD_NODE:
 	child = makeNode( x, y, 20 );
+	child.addEventListener("click", elClick);
 	break;
     case ADD_CNXN:
 	child = makeCnxn( x, y, 20 );
+	child.addEventListener("click", elClick);
 	break;
     }
+
+    if (type >= ADD_PT && type <= ADD_CNXN){
+	child.setAttribute("id", idCount);
+	child.setAttribute("name", child.getAttribute("customType") + idCount++);
+	
+    }
     getActivePage().appendChild(child);
+    return child;
 }
 
 var updateCanvas = function(e){
@@ -414,6 +417,7 @@ var closestPathDrop = function(x,y){
 
 }
 
+var clickedEl = null; //tracking
 //concerns: runtime
 var canvasClick = function(e){
 
@@ -435,8 +439,9 @@ var canvasClick = function(e){
 	if (closest == null){
 	    logStatus("No anchor node");
 	}
-	else {	
-	    addEl(closest.getAttribute("cx"), closest.getAttribute("cy"), ADD_PATH);
+	else {
+	    var newPath = addEl(closest.getAttribute("cx"), closest.getAttribute("cy"), ADD_PATH);
+	    newPath.setAttribute("p1", closest.getAttribute("id"));
 	    mode = CONF_PATH;
 	}
 
@@ -458,36 +463,55 @@ var canvasClick = function(e){
 			 line.getAttribute("x2"), line.getAttribute("y2")) < 5){
 		getActivePage().removeChild(line);//prevent self-attachment
 	    }
+	    line.setAttribute("p2", closest.getAttribute("id"));
+	    line.addEventListener("click", elClick);
 	}
 	break;
     default:
 	logStatus("Non-functional/default");
 	break;
     }
-
+    console.log("canvas clicked");
+    clickedEl = null;
 }
 
 var elClick = function(e){
+    clrMonitor();
+    event.stopPropagation();
+    updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
+    addMonitorField("Name");
+    updateMonitor("Id", this.getAttribute("id"));
+
     switch (this.getAttribute("customType")){
     case "pt":
-	updateMonitor("Name", this.getAttribute("name"));
+    case "node":
+	clickedEl = this;
 	break;
     case "path":
-	updateMonitor("Name", this.getAttribute("name"));
-	break;
-    case "node":
-	updateMonitor("Name", this.getAttribute("name"));
+	updateMonitor("Point One", this.getAttribute("p1"));
+	updateMonitor("Point Two", this.getAttribute("p2"));
+	clickedEl = this;
 	break;
     case "cnxn":
-	updateMonitor("Name", this.getAttribute("name"));
+	updateMonitor("Link", this.getAttribute("link"));
+	addMonitorField("Link");
+	clickedEl = this;
 	break;
     }
+
     console.log(this.getAttribute("customType") + " clicked.");
 }
 
-
-editorCanvas.addEventListener("click", canvasClick);
-editorCanvas.addEventListener("mousemove", updateCanvas);
+var delEl = function(){
+    if (clickedEl != null){
+	//remove associations
+	var page = getActivePage();
+	page.removeChild(clickedEl);
+	console.log(clickedEl);
+	clickedEl = null;
+	clrMonitor();
+    }
+}
 
 //To do - add restrictions on clicking, status bar (error log)
 //Custom colors and path etc
@@ -506,11 +530,6 @@ var setModeFunc = function(newMode){
 	setMode(newMode);
     };
 }
-
-ptBtn.addEventListener("click", setModeFunc(ADD_PT));
-pathBtn.addEventListener("click", setModeFunc(ADD_PATH));
-nodeBtn.addEventListener("click", setModeFunc(ADD_NODE));
-cnxnBtn.addEventListener("click", setModeFunc(ADD_CNXN));
 
 var clrActive = function(){
     var page = getActivePage();
@@ -535,8 +554,6 @@ var rClick = function(e){
     clrActive();
 }
 
-editorCanvas.addEventListener('contextmenu', rClick, false);
-
 //Monitors
 //==================================================================
 
@@ -555,31 +572,50 @@ var clrMonitor = function(){
 
 var updateMonitor = function(s1, s2){
     var s = document.createElement("p");
-    s.innerHTML = s1 + ":" + s2;
+    s.innerHTML = s1 + " : " + s2;
     monitor.appendChild(s);
 }
 
-//var updateTitle = function(s1, s2){}
-
-clrBtn.addEventListener("click", clrEditor);
-addPgBtn.addEventListener("click", addPage);
-delPgBtn.addEventListener("click", delPage);
-nextPgBtn.addEventListener("click", toNextPage);
-prevPgBtn.addEventListener("click", toPrevPage);
+var addMonitorField = function(fieldName){//to be changed
+    var f = document.createElement("p");
+    f.innerHTML = fieldName;
+    monitor.appendChild(f);
+}
 
 
 //LOADING PAGE : needs refactoring
 var loadMap = function(){//inital script
 
     //    if (dataExists()){
+    //      retrieveData(); //and then process it
     //    }
     //    else{ //default loading
-    mapTitle.innerHTML = "SAMPLE MAP";    
+    mapTitle.innerHTML = "SAMPLE MAP";
+    addPage();
     page = getActivePage();    
     pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
-    
+    totalPages = 0; //load
+    idCount = 0; //simple id scheme, just count up every time element is made
+    mode = DEFAULT;
     //}
 
 }
 
 loadMap();
+
+//Buttons/Event Listeners
+editorCanvas.addEventListener("click", canvasClick);
+editorCanvas.addEventListener("mousemove", updateCanvas);
+editorCanvas.addEventListener('contextmenu', rClick, false);
+
+ptBtn.addEventListener("click", setModeFunc(ADD_PT));
+pathBtn.addEventListener("click", setModeFunc(ADD_PATH));
+nodeBtn.addEventListener("click", setModeFunc(ADD_NODE));
+cnxnBtn.addEventListener("click", setModeFunc(ADD_CNXN));
+
+clrBtn.addEventListener("click", clrEditor);
+addPgBtn.addEventListener("click", addPage);
+delPgBtn.addEventListener("click", delPage);
+nextPgBtn.addEventListener("click", toNextPage);
+prevPgBtn.addEventListener("click", toPrevPage);
+delElBtn.addEventListener("click", delEl);
