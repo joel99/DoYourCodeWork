@@ -2,6 +2,7 @@
 //updateCanvas, canvasClick, and elClick are most important funcitons. everything else just helps
 
 //ROAD MAP for JOEL:
+//clear cnxn and page dependencies on remove element
 //add id system for elements
 //add monitor system for elements
 //add display info for page
@@ -476,30 +477,31 @@ var canvasClick = function(e){
 }
 
 var elClick = function(e){
-    clrMonitor();
-    event.stopPropagation();
-    updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
-    addMonitorField("Name");
-    updateMonitor("Id", this.getAttribute("id"));
+    if (mode == DEFAULT){
+	clrMonitor();
+	event.stopPropagation();
+	updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
+	addMonitorField("Name");
+	updateMonitor("Id", this.getAttribute("id"));
 
-    switch (this.getAttribute("customType")){
-    case "pt":
-    case "node":
-	clickedEl = this;
-	break;
-    case "path":
-	updateMonitor("Point One", this.getAttribute("p1"));
-	updateMonitor("Point Two", this.getAttribute("p2"));
-	clickedEl = this;
-	break;
-    case "cnxn":
-	updateMonitor("Link", this.getAttribute("link"));
-	addMonitorField("Link");
-	clickedEl = this;
-	break;
+	switch (this.getAttribute("customType")){
+	case "pt":
+	case "node":
+	    clickedEl = this;
+	    break;
+	case "path":
+	    updateMonitor("Point One", this.getAttribute("p1"));
+	    updateMonitor("Point Two", this.getAttribute("p2"));
+	    clickedEl = this;
+	    break;
+	case "cnxn":
+	    updateMonitor("Link", this.getAttribute("link"));
+	    addMonitorField("Link");
+	    clickedEl = this;
+	    break;
+	}	
+	console.log(this.getAttribute("customType") + " clicked.");
     }
-
-    console.log(this.getAttribute("customType") + " clicked.");
 }
 
 var delEl = function(){
@@ -507,7 +509,6 @@ var delEl = function(){
 	//remove associations
 	var page = getActivePage();
 	page.removeChild(clickedEl);
-	console.log(clickedEl);
 	clickedEl = null;
 	clrMonitor();
     }
@@ -521,6 +522,7 @@ var delEl = function(){
 var setModeFunc = function(newMode){
     return function(){
 	clrActive();
+	clrMonitor();
 	if (newMode == ADD_PT ||
 	    newMode == ADD_CNXN ||
 	    newMode == ADD_NODE){
