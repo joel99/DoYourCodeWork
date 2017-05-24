@@ -31,9 +31,10 @@ def gallery():
     return redirect( "/gallery/browse/page/1" )
 
 #To do - figure out number of pages / how to link them at bottom (reference database)
-@app.route("/gallery/browse/<pageNum>")
+@app.route("/gallery/browse/page/<pageNum>")
 def galleryPage(pageNum):
-    data = gallery.getPage(pageNum)
+    #data = gallery.getPage(pageNum) <-- get back later
+    data = []
     if len(data) == 0:
         #rip come back later
         return render_template( "emptyGallery.html", isLoggedIn = isLoggedIn() )
