@@ -2,9 +2,9 @@
 //updateCanvas, canvasClick, and elClick are most important funcitons. everything else just helps
 
 //ROAD MAP for JOEL:
+//add panning/moving via public library
 //submission fields for editable attributes
 //add file upload/download for background images
-//add panning/moving via public library
 //pretty submission areas
 
 //Notes:
@@ -75,6 +75,7 @@ var setPage = function(num){
 
     page.setAttribute("isCurrent", "false");
     getPage(num).setAttribute("isCurrent", "true");
+    page.setAttribute("id", "viewport");
     
     clrActive();
     page = getActivePage();
@@ -119,10 +120,10 @@ var addPage = function(){
 	editorCanvas.appendChild(p);	
     }
     else if (getActivePage().getAttribute("num") == totalPages){//there is already a page, and this is the last page
-	console.log("nice");
 	editorCanvas.appendChild(p);
 	totalPages += 1;	
 	toNextPage();
+	page.setAttribute("id", "viewport");
     }
 
 }
