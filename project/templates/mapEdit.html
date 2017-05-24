@@ -1,8 +1,7 @@
-<html>
-  <head>
-    <title>Map Editor</title>
-  </head>
-  <body>    
+{% extends "base.html" %}
+
+
+{% block content %}
     <svg id="editorCanvas" xmlns="http://www.w3.org/2000/svg" width = "1000", height = "500" style="border:1px solid #000000"/>
     <br>
     <button id="clrBtn">Clear</button>
@@ -36,5 +35,4 @@
     <script src="../static/editor.js"></script>
     <!--<script src="../static/svg-pan-zoom.js"></script>-->
     <script src="../static/svgpan.js"></script>
-  </body>
-</html>
+{% endblock %}

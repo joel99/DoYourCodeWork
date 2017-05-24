@@ -37,7 +37,7 @@ def galleryPage(pageNum):
     if len(data) == 0:
         #rip come back later
         return render_template( "emptyGallery.html", isLoggedIn = isLoggedIn() )
-    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )    
+    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
 
 # == Queried ===================================
 @app.route("/gallery/search/<searchQuery>") #Umm, should this be a GET request
@@ -45,8 +45,8 @@ def gallerySearch(searchQuery):
     data = gallery.search(searchQuery)
     if len(data) == 0:
         return render_template( "searchEmptygallery.html", isLoggedIn = isLoggedIn() )
-    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )    
-    
+    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
+
 @app.route("/help/")
 def help():
     return render_template( "help.html", isLoggedIn = isLoggedIn() )
@@ -73,7 +73,7 @@ def mapEdit(mapID):
         return redirect( url_for('root') )
     else:
         data = mapUtil.getMapData(mapID)
-        return render_template( "editMap.html", mapData = data ) 
+        return render_template( "editMap.html", mapData = data )
 
 # Login Routes ======================================
 
@@ -83,8 +83,9 @@ def login():
     uN = request.form["username"]
     pwd = request.form["password"]
     #auth
-    if users.isValidAccountInfo( uN, pwd ):
-        session['uID'] = users.getUserID( uN )
+    if 'login' in request.form:
+        if users.isValidAccountInfo( uN, pwd ):
+            session['uID'] = users.getUserID( uN )
     return redirect( url_for('root') )
 
 @app.route("/logout/")
