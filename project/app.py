@@ -41,11 +41,13 @@ def galleryPage(pageNum):
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
 
 # == Queried ===================================
-@app.route("/gallery/search/<searchQuery>") #Umm, should this be a GET request
-def gallerySearch(searchQuery):
-    data = gallery.search(searchQuery)
-    if len(data) == 0:
-        return render_template( "searchEmptygallery.html", isLoggedIn = isLoggedIn() )
+@app.route("/gallery/search/") #Umm, should this be a GET request / Done - JC
+def gallerySearch():
+    if 'searchQ' in request.args:
+        searchQuery = request.args['searchQ']
+        data = gallery.search(searchQuery)
+        if len(data) == 0:
+            return render_template( "searchEmptygallery.html", isLoggedIn = isLoggedIn() )
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
 
 @app.route("/help/")

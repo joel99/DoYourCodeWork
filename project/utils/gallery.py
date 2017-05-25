@@ -17,5 +17,5 @@ def getPage(pageNum):
     return None
 
 
-def search(query):
-    return None
+#def search(query):
+#    return None

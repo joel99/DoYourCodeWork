@@ -13,8 +13,8 @@ h1,h2,h3,h4{
 }
 
 body{
-	background: url('http://www.userlogos.org/files/backgrounds/ctach1991/Clouds2560x1600.jpg');
 	height: 100%;
+  padding-top: 64px;
 }
 
 
