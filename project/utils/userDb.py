@@ -21,6 +21,8 @@ Returns:
     boolean of validity of account info (for login)
 """
 def isValidAccountInfo( uN, hP ):
+    if not doesUserExist( uN ):
+        return False
     finder = cU.find_one(
         { "username" : uN }
         )
