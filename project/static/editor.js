@@ -117,13 +117,14 @@ var addPage = function(){
     if (totalPages == 0){
 	p.setAttribute("isCurrent", "true");
 	totalPages += 1;
-	editorCanvas.appendChild(p);	
+	editorCanvas.appendChild(p);		
+	p.setAttribute("id", "viewport");
     }
     else if (getActivePage().getAttribute("num") == totalPages){//there is already a page, and this is the last page
 	editorCanvas.appendChild(p);
 	totalPages += 1;	
 	toNextPage();
-	page.setAttribute("id", "viewport");
+	p.setAttribute("id", "viewport");
     }
 
 }
