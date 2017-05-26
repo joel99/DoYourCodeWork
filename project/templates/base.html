@@ -28,7 +28,7 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Gallery<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a href="/gallery">Browse</li>
-              <li><a href="/">My Maps</li>
+              <li><a href="/gallery/mymaps">My Maps</li>
               <li><a href="/">Edit</a></li>
             </ul>
           </li>
@@ -51,7 +51,6 @@
         </form>
 
         <ul class="nav navbar-nav navbar-right">
-          {{message}}
           {% if not isLoggedIn %}
           <li>
             <a data-toggle="modal" data-target="#signup" href="#signup">Signup</a>
@@ -138,7 +137,7 @@
       </div>
     </div>
 
-    <script src="../static/js/jquery.min.js"></script>
-    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
   </body>
 </html>

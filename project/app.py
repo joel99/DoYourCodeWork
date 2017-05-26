@@ -38,7 +38,7 @@ def galleryPage(pageNum):
     if len(data) == 0:
         #rip come back later
         return render_template( "gallery.html", isLoggedIn = isLoggedIn(), message = "There are no maps at this time :( Come back later" )
-    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
+    return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data , message = "You are viewing the gallery")
 
 # == Queried ===================================
 @app.route("/gallery/search/") #Umm, should this be a GET request / Done - JC
@@ -49,6 +49,14 @@ def gallerySearch():
         if data == None:
             return render_template( "gallery.html", isLoggedIn = isLoggedIn() , message = "There were no search results for \"" + searchQuery + "\"")
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
+
+@app.route("/gallery/mymaps/")
+def mymaps():
+    data = []
+    #data = retrieve my maps function
+    if len(data) == 0 or data == None:
+        return render_template("gallery.html", isLoggedIn = isLoggedIn(), message = "You have no maps! Create one!")
+    return render_template("gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data)
 
 @app.route("/help/")
 def help():
