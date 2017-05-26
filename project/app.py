@@ -95,7 +95,7 @@ def mapEdit(mapID):
 @app.route("/map/createRedirect", methods=["POST"])
 def mapRedirect():
     mapName = request.form["mapName"]
-    mapId = mapUtil.makeNewMap(mapName) #returns id
+    mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
     return redirect(urlfor(mapEdit(mapId)))
 
 # Login Routes ======================================
