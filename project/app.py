@@ -58,6 +58,11 @@ def mymaps():
         return render_template("gallery.html", isLoggedIn = isLoggedIn(), message = "You have no maps! Create one!")
     return render_template("gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data)
 
+@app.route("/create/")
+def create():
+    #Should generate a new id for the map and redirect to that link
+    return render_template("home.html")
+
 @app.route("/help/")
 def help():
     return render_template( "help.html", isLoggedIn = isLoggedIn() )
