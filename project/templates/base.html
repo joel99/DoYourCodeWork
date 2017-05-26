@@ -45,7 +45,7 @@
 
         <form action="/gallery/search" class="navbar-form navbar-left" role="search">
           <div class="form-group">
-            <input name="searchQ" type="text" class="form-control" placeholder="Search">
+            <input name="searchQ" type="text" class="form-control" placeholder="Search" required>
           </div>
           <button type="submit" class="btn btn-default">Search</button>
         </form>
@@ -78,6 +78,11 @@
         </ul>
       </div>
     </nav>
+    
+    <div id="messagediv">
+      {{message}}
+    </div>
+
 
     <div>
       {% block content %}

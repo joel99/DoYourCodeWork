@@ -27,7 +27,7 @@ def settings():
 
 # == Gallery Browsing ==========================
 @app.route("/gallery/")
-def gallery():
+def galleryRoute():
     return redirect( "/gallery/browse/page/1" )
 
 #To do - figure out number of pages / how to link them at bottom (reference database)
@@ -37,7 +37,7 @@ def galleryPage(pageNum):
     data = []
     if len(data) == 0:
         #rip come back later
-        return render_template( "emptyGallery.html", isLoggedIn = isLoggedIn() )
+        return render_template( "gallery.html", isLoggedIn = isLoggedIn(), message = "There are no maps at this time :( Come back later" )
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
 
 # == Queried ===================================
@@ -46,8 +46,8 @@ def gallerySearch():
     if 'searchQ' in request.args:
         searchQuery = request.args['searchQ']
         data = gallery.search(searchQuery)
-        if len(data) == 0:
-            return render_template( "searchEmptygallery.html", isLoggedIn = isLoggedIn() )
+        if data == None:
+            return render_template( "gallery.html", isLoggedIn = isLoggedIn() , message = "There were no search results for \"" + searchQuery + "\"")
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
 
 @app.route("/help/")
