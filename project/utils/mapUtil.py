@@ -70,3 +70,10 @@ def getMapData( mapID ):
         )
     return finder["data"] 
 
+"""
+makeNewMap( mapName )
+Given:
+  mapName - yes
+"""
+def makeNewMap( mapName ) :
+    return None
