@@ -8,7 +8,15 @@
     <button id="delPgBtn">Delete Page</button>
     <button id="addPgBtn">Add Page</button>
     <button id="nextPgBtn">Next Page</button>
-    <button id="prevPgBtn">Prev Page</button>    
+    <button id="prevPgBtn">Prev Page</button>
+    <form id="form_upload" action="/map/upload/" method="post" enctype="multipart/form-data">
+      <div class="form-group hidden">
+	<label class="control-label" for="upload">
+	  Please Upload a file
+	</label>
+	<input type="file" class="form-control" id="upload_input" name="upload" onchange="this.form.submit();">
+      </div>
+    </form>
     <button id="delMapBtn">Delete Map</button>
     <button id="pubMapBtn">Publish Map</button>
     <button id="saveMapBtn">Save Map</button>
