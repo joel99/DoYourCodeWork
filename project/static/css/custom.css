@@ -14,7 +14,6 @@ h1,h2,h3,h4{
 
 body{
 	height: 100%;
-  padding-top: 64px;
 }
 
 
@@ -70,6 +69,11 @@ body{
 
 #back{
 	background: url(http://i.huffpost.com/gen/1361872/images/o-VINYL-facebook.jpg);
+}
+
+#content{
+     /padding-top: 80px;
+ 
 }
 
 @keyframes fade{

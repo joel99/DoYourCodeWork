@@ -83,13 +83,18 @@ def mapPage(mapID):
     return render_template( "map.html", isLoggedIn = isLoggedIn(), owned = owns, lock = locked )
 
 #EDITING PAGE
+@app.route("/map/edit")
+def mapEditTest():
+    return render_template("mapEdit.html")
+
+
 @app.route("/map/<mapID>/edit")
 def mapEdit(mapID):
     if not mapUtil.ownsMap(uID, mapID):
         return redirect( url_for('root') )
     else:
         data = mapUtil.getMapData(mapID)
-        return render_template( "editMap.html", mapData = data )
+        return render_template( "mapEdit.html", mapData = data )
 
 #MAP REDIRECT PAGE
 @app.route("/map/createRedirect", methods=["POST"])
