@@ -121,6 +121,9 @@ def makeNewMap( mapName, userID ) :
     except:
         return False
 
+def userFind( uID ):
+    
+
 #helper functions
 
 def counter_cM():
