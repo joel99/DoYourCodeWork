@@ -34,7 +34,20 @@
           </li>
 
 
-          <li><a href="/create">Create</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Create<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li>
+		<form action="/create/" method="POST" class="navbar-form navbar-left" role="search">
+		  <div class="form-group">
+		    <input name="mapName" type="text" class="form-control" placeholder="Name" required>
+		  </div>
+		  <button type="submit" class="btn btn-default">Create</button>
+		</form>
+	      </li>
+            </ul>
+          </li>
+	  
           <li><a href="">Store</a></li>
           <li><a href="">Inventory</a></li>
 
@@ -83,7 +96,7 @@
 	{{message}}
       </div>
 
-      Hellox
+      Hello
       {% block content %}
       {% endblock %}
     </div>

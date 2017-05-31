@@ -58,11 +58,6 @@ def mymaps():
         return render_template("gallery.html", isLoggedIn = isLoggedIn(), message = "You have no maps! Create one!")
     return render_template("gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data)
 
-@app.route("/create/")
-def create():
-    #Should generate a new id for the map and redirect to that link
-    return render_template("home.html")
-
 @app.route("/help/")
 def help():
     return render_template( "help.html", isLoggedIn = isLoggedIn() )
@@ -83,7 +78,7 @@ def mapPage(mapID):
     return render_template( "map.html", isLoggedIn = isLoggedIn(), owned = owns, lock = locked )
 
 #EDITING PAGE
-@app.route("/map/edit")
+@app.route("/map/edit/")
 def mapEditTest():
     return render_template("mapEdit.html")
 
@@ -97,7 +92,7 @@ def mapEdit(mapID):
         return render_template( "mapEdit.html", mapData = data )
 
 #MAP REDIRECT PAGE
-@app.route("/map/createRedirect", methods=["POST"])
+@app.route("/create/", methods=["POST"])
 def mapRedirect():
     mapName = request.form["mapName"]
     mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
