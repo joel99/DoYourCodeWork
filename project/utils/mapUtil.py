@@ -1,3 +1,7 @@
+#import modules needed
+
+import datetime
+
 #initialize mongo database
 
 from pymongo import MongoClient
@@ -57,6 +61,14 @@ def isPublished( mapID ):
     else:
         return False
 
+def getMapName( mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : mapID }
+            )
+        return finder["mapName"]
+    return None 
+
 """
 getMapData( mapID )
 Given:
@@ -65,15 +77,51 @@ Returns:
   <data> form of the data held in a given map
 """    
 def getMapData( mapID ):
-    finder = cM.find_one(
-        { "mapID" : mapID }
-        )
-    return finder["data"] 
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : mapID }
+            )
+        return finder["data"]
+    return None
+
+def getTimeCreated( mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : mapID }
+            )
+        return finder["timeCreated"]
+    return None
+
+def getTimeUpdated( mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : mapID }
+            )
+        return finder["timeUpdated"]
+    return None 
 
 """
-makeNewMap( mapName )
+makeNewMap( mapName, uID )
 Given:
-  mapName - yes
+  mapName - True
 """
-def makeNewMap( mapName ) :
-    return None
+def makeNewMap( mapName, userID ) :
+    try:
+        doc = {}
+        doc["mapID"] = counter_cM()
+        doc["mapName"] = mapName
+        doc["uID"] = userID
+        doc["published"] = 0
+        doc["timeCreated"] = datetime.date.today().ctime()
+        doc["timeUpdated"] = datetime.date.today().ctime()
+        doc["data"] = None
+
+        cM.insert_one( doc )
+        return True
+    except:
+        return False
+
+#helper functions
+
+def counter_cM():
+    return cM.count()
