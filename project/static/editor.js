@@ -126,6 +126,8 @@ var addPage = function(){
 	toNextPage();
 	p.setAttribute("id", "viewport");
     }
+    
+    return p;
 
 }
 
@@ -619,24 +621,46 @@ var addMonitorField = function(fieldName){//to be changed
 
 
 //LOADING PAGE : needs refactoring
-var loadMap = function(){//inital script
+var loadMap = function(){//initalization script
+    var mapData = AJAXPullData();
+    loadTitle(mapData["title"]);
+    if (mapData["canvasData"] != null){
+        var canvasJSON = mapData["canvasData"]; //and then process it
+	//totalPages = canvasJSON["pages"];
+	totalPages = 0;
+	idCount = canvasJSON["idCt"];
+	
+	for (pageData in canvasJSON["canvas"]){
+	    var page = addPage();
+	    page.setAttribute( "name", pageData["name"] );
+	    //page.setAtribute( "num", pageData["num"] ); //not sure we need this
+	    page.setAttribute( "isCurrent", false );
+	    page.setAttribute( "id", "viewport" );
+	    for (item in pageData["data"]){
+		//append children... 
+	    }
+	}
+	if (totalPages != 0){
+            setPage(1);
+	}
 
-    //    if (dataExists()){
-    //      retrieveData(); //and then process it
-    //    }
-    //    else{ //default loading
-    mapTitle.innerHTML = "SAMPLE MAP";
-    totalPages = 0; //load
-    idCount = 0; //simple id scheme, just count up every time element is made
-    addPage();
-    page = getActivePage();    
-    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
-    mode = DEFAULT;
-    //}
+    }
+    else{ //default loading
+	totalPages = 0; //load
+	idCount = 0; //simple id scheme, just count up every time element is made
+	addPage();
+	page = getActivePage();    
+	pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
+	mode = DEFAULT;
+    }
 
 }
 
 loadMap();
+
+var loadTitle = function(title){
+    mapTitle.innerHTML = title;
+}
 
 //Buttons/Event Listeners
 var ptBtn = document.getElementById("ptBtn");
@@ -675,3 +699,54 @@ nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
 
+
+//SAVING AND LOADING
+var canvasToJSON = function(){
+
+    //not sure if we need pages
+    var canvasJSON = {"canvas": [], "pages" : totalPages, "idCt" : idCount };
+    for (i = 0; i < editorCanvas.children.length; i++){
+	var child = editorCanvas.childNodes[i]; //store pages
+	var pageDict = {"name": child.getAttribute("name"), 
+			    "num": child.getAttribute("num"), 
+			    "data" : []}; 
+	canvasJSON["canvas"].push(pageDict);
+	for (j = 0; j < child.children.length; j++){
+	    var item = child.childNodes[j];
+	    var itemDict = {"name": item.getAttribute("name"),
+			    "id": item.getAttribute("id"),
+			    "type": item.getAttribute("customType"),
+			   }//add color here
+	    switch (item.getAttribute("customType")){
+		case "pt":
+		case "node":
+		itemDict["cx"] = item.getAttribute("cx");
+		itemDict["cy"] = item.getAttribute("cy");
+		itemDict["r"] = item.getAttribute("r");
+		break;
+		case "cnxn":
+		itemDict["cx"] = item.getAttribute("cx");
+		itemDict["cy"] = item.getAttribute("cy");
+		itemDict["r"] = item.getAttribute("r");
+		itemDict["link"] = item.getAttribute("link");
+		break;
+		case "path":
+		itemDict["x1"] = item.getAttribute("x1");
+		itemDict["y1"] = item.getAttribute("y1");
+		itemDict["x2"] = item.getAttribute("x2");
+		itemDict["y2"] = item.getAttribute("y2");
+		itemDict["p1"] = item.getAttribute("p1");
+		itemDict["p2"] = item.getAttribute("p2");
+		itemDict["width"] = item.getAttribute("stroke-width");
+		break;
+	    }
+	    pageDict["data"].push(itemDict);
+	}
+    }
+    console.log(canvasJSON);
+    return canvasJSON;
+}
+
+var refreshIDs = function(){
+    //to prevent overflow (long term sustainability)
+}
