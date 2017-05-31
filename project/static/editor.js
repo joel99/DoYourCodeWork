@@ -619,12 +619,16 @@ var addMonitorField = function(fieldName){//to be changed
     monitor.appendChild(f);
 }
 
+var pullAJAXData = function(){
+    return null;
+}
 
 //LOADING PAGE : needs refactoring
 var loadMap = function(){//initalization script
-    var mapData = AJAXPullData();
-    loadTitle(mapData["title"]);
-    if (mapData["canvasData"] != null){
+    var mapData = pullAJAXData();
+    //loadTitle(mapData["title"]); //UNCOMMENT
+    if (//mapData["canvasData"] != null // UNCOMMENT
+       mapData != null){
         var canvasJSON = mapData["canvasData"]; //and then process it
 	//totalPages = canvasJSON["pages"];
 	totalPages = 0;
@@ -637,7 +641,31 @@ var loadMap = function(){//initalization script
 	    page.setAttribute( "isCurrent", false );
 	    page.setAttribute( "id", "viewport" );
 	    for (item in pageData["data"]){
-		//append children... 
+		var el;
+		switch (item["type"]){
+		    //name, id
+		case "pt":
+		    el = makePt(item["cx"], item["cy"], item["r"]);
+		    break;
+		case "node":
+		    el = makeNode(item["cx"], item["cy"], item["r"]);
+		    break;
+		case "cnxn":
+		    el = makeCnxn(item["cx"], item["cy"], item["r"]);
+		    el.setAttribute("link", item["link"]);
+		    break;
+		case "path":
+		    el = makePath(item["x1"], item["y1"], item["x2"], item["y2"]);
+		    el.setAttribute("p1", item["p1"]);
+		    el.setAttribute("p2", item["p2"]);
+		    el.setAttribute("stroke-width", item["width"]);
+		    break;
+		}
+		
+		el.setAttribute("name", item["name"]);
+		el.setAttribute("id", item["id"]);
+		el.setAttribute("visibility", "hidden");
+		page.appendChild(el);
 	    }
 	}
 	if (totalPages != 0){
@@ -698,9 +726,15 @@ delPgBtn.addEventListener("click", delPage);
 nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
-
+saveMapBtn.addEventListener("click", saveMap);
 
 //SAVING AND LOADING
+var saveMap = function(){
+    var mapJSON = canvasToJSON();
+    //AJAX
+    return null;
+}
+
 var canvasToJSON = function(){
 
     //not sure if we need pages
