@@ -778,6 +778,17 @@ var canvasToJSON = function(){
 	}
     }
     console.log(canvasJSON);
+    $.ajax({
+	    type: "POST",
+	    url : "/saveData/",
+	    dataType: "json",
+	    data: JSON.stringify(canvasJSON),
+	    success: function(response) {
+		console.log("works");
+	    error: function(response) {
+		console.log("nope");
+	    }
+	});
     return canvasJSON;
 }
 
