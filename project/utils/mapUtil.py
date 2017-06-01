@@ -1,6 +1,7 @@
 #import modules needed
 
 import datetime
+import time
 
 #initialize mongo database
 
@@ -113,7 +114,9 @@ def makeNewMap( mapName, userID ) :
         doc["uID"] = userID
         doc["published"] = 0
         doc["timeCreated"] = datetime.date.today().ctime()
+        doc["tCreated"] = time.time()
         doc["timeUpdated"] = datetime.date.today().ctime()
+        doc["tUpdated"] = time.time()
         doc["data"] = None
 
         cM.insert_one( doc )
@@ -121,8 +124,37 @@ def makeNewMap( mapName, userID ) :
     except:
         return False
 
+def mapPull( mapID ):
+    finder = cM.find_one(
+        { "mapID" : mapID }
+        )
+    meta = {}
+    meta["mapID"] = finder["mapID"] #check if fxn actually works
+    meta["mapName"] = finder["mapName"]
+    meta["uID"] = finder["uID"]
+    meta["published"] = finder["published"]
+    meta["timeCreated"] = finder["timeCreated"]
+    meta["timeUpdated"] = finder["timeUpdated"]
+    meta["data"] = finder["data"]
+    return meta
+
 def userFind( uID ):
-    
+    ret = []
+    finder = cM.find(
+        { "uID" : uID },
+        sort = sort( "tUpdated", pymongo.DESCENDING )
+        )
+    for item in finder:
+        meta = {}
+        meta["mapID"] = item["mapID"]
+        meta["mapName"] = item["mapName"]
+        meta["uID"] = item["uID"] #check if fxn actually works
+        meta["published"] = item["published"]
+        meta["timeCreated"] = item["timeCreated"]
+        meta["timeUpdated"] = item["timeUpdated"]
+        meta["data"] = item["data"]
+        ret.append(meta)
+    return ret
 
 #helper functions
 

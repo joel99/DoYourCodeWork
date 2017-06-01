@@ -11,12 +11,9 @@ def search(searchQuery):
 
 #Data returned should be a list of json objects with each entry being map link data
     #ie. [name:a, author:b, date_updated:c, thumbnail: d (OPTIONAL)]
-    
-def mapPull( mapID ):
-    return getMapData( mapID )
 
 def userPull( userID ):
-    return False
+    return mapUtil.userFind( userID )
     
 #by date updated OR popularity (date updated for now)
 #10 entries per page
