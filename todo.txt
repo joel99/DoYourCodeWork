@@ -30,3 +30,6 @@ In app.py - pass userID mapName
 
 
 - pull most recent entries
+
+
+- Shamaul, run through db code and make sure there are no type errors (stored as int right? be careful when comparing)

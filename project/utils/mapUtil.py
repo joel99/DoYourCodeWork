@@ -25,8 +25,9 @@ Returns:
 """
 def exists( mapID ):
     finder = cM.find_one(
-        { "mapID" : mapID }
+        { "mapID" : int(mapID) }
         )
+    print "clearly " + str(mapID) + " does not exist"
     return finder is not None
 
 """
@@ -40,10 +41,11 @@ Returns:
 def ownsMap( uID, mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["uID"] == uID 
     else:
+        print str(uID) + " does not own " + str(mapID)
         return False
 
 """
@@ -80,7 +82,7 @@ Returns:
 def getMapData( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["data"]
     return None
@@ -120,7 +122,8 @@ def makeNewMap( mapName, userID ) :
         doc["data"] = None
 
         cM.insert_one( doc )
-        return True
+        print "in fact, " + str(userID) + " owns " + str(doc["mapID"])
+        return doc["mapID"]
     except:
         return False
 

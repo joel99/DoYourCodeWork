@@ -782,7 +782,9 @@ var canvasToJSON = function(){
 	    type: "POST",
 	    url : "/saveData/",
 	    dataType: "json",
-	    data: JSON.stringify(canvasJSON),
+	    data: {
+		"canvasDict" : canvasJSON
+	    },
 	    success: function(response) {
 		console.log("works");
 	    error: function(response) {
