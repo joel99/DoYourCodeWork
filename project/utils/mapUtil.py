@@ -58,7 +58,7 @@ Returns:
 def isPublished( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["published"] == 1
     else:
@@ -67,7 +67,7 @@ def isPublished( mapID ):
 def getMapName( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["mapName"]
     return None 
@@ -90,7 +90,7 @@ def getMapData( mapID ):
 def getTimeCreated( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["timeCreated"]
     return None
@@ -98,7 +98,7 @@ def getTimeCreated( mapID ):
 def getTimeUpdated( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["timeUpdated"]
     return None 
@@ -113,7 +113,7 @@ def makeNewMap( mapName, userID ) :
         doc = {}
         doc["mapID"] = counter_cM()
         doc["mapName"] = mapName
-        doc["uID"] = userID
+        doc["uID"] = int(userID)
         doc["published"] = 0
         doc["timeCreated"] = datetime.date.today().ctime()
         doc["tCreated"] = time.time()
@@ -129,7 +129,7 @@ def makeNewMap( mapName, userID ) :
 
 def mapPull( mapID ):
     finder = cM.find_one(
-        { "mapID" : mapID }
+        { "mapID" : int(mapID) }
         )
     meta = {}
     meta["mapID"] = finder["mapID"] #check if fxn actually works
@@ -144,7 +144,7 @@ def mapPull( mapID ):
 def userFind( uID ):
     ret = []
     finder = cM.find(
-        { "uID" : uID },
+        { "uID" : int(uID) },
         sort = sort( "tUpdated", pymongo.DESCENDING )
         )
     for item in finder:
