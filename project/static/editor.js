@@ -796,8 +796,6 @@ var canvasToJSON = function(){
 	}
     }
     console.log(canvasJSON);
-<<<<<<< HEAD
-=======
     $.ajax({
 	    type: "POST",
 	    url : "/saveData/",
@@ -811,7 +809,6 @@ var canvasToJSON = function(){
 		console.log("nope");
 	    }
 	});
->>>>>>> d8652f0d77d2b9a06c2f4e3ab34e6c698ebc8da6
     return canvasJSON;
 }
 

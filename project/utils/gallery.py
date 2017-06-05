@@ -4,8 +4,8 @@ import mapUtil
 
 #Gallery map data retrieval functions
 
-def search(searchQuery):
-    return None
+def getPage( PageNum=1, searchQuery="" ):
+    return mapUtil.getPage( PageNum, searchQuery )
 
 #Map database functions for the gallery
 
@@ -17,8 +17,8 @@ def userPull( userID ):
     
 #by date updated OR popularity (date updated for now)
 #10 entries per page
-def getPage(pageNum):
-    return None
+#def getPage(pageNum):
+    # return None
 
 
 #def search(query):
