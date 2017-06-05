@@ -89,7 +89,7 @@ def mapEdit(mapID):
     else:
         data = mapUtil.getMapData(mapID)
         print data
-        return render_template( "mapEdit.html" )
+        return render_template( "mapEdit.html", isLoggedIn = isLoggedIn() )
 
 #MAP REDIRECT PAGE
 @app.route("/create/", methods=["POST"])
