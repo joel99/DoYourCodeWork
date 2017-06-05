@@ -33,7 +33,7 @@ def galleryRoute():
 #To do - figure out number of pages / how to link them at bottom (reference database)
 @app.route("/gallery/browse/page/<pageNum>")
 def galleryPage(pageNum):
-    data = gallery.getPage(pageNum) <-- get back later
+    data = gallery.getPage(pageNum) #<-- get back later
     if len(data) == 0:
         #rip come back later
         return render_template( "gallery.html", isLoggedIn = isLoggedIn(), message = "There are no maps at this time :( Come back later" )
