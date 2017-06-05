@@ -731,7 +731,17 @@ saveMapBtn.addEventListener("click", saveMap);
 //SAVING AND LOADING
 var saveMap = function(){
     var mapJSON = canvasToJSON();
-    //AJAX
+    $.ajax({
+	    type: "POST",
+	    url : "/saveData/",
+	    dataType: "json",
+	    data: JSON.stringify(mapJSON),
+	    success: function(response) {
+		console.log("works");
+	    error: function(response) {
+		console.log("nope");
+	    }
+	});
     return null;
 }
 
