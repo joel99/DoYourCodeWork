@@ -85,18 +85,28 @@ def mapEditTest():
 
 @app.route("/map/<mapID>/edit")
 def mapEdit(mapID):
-    if not mapUtil.ownsMap(uID, mapID):
+    if not mapUtil.ownsMap(getUserID(), mapID):
         return redirect( url_for('root') )
     else:
         data = mapUtil.getMapData(mapID)
-        return render_template( "mapEdit.html", mapData = data )
+        print data
+        return render_template( "mapEdit.html" )
 
 #MAP REDIRECT PAGE
 @app.route("/create/", methods=["POST"])
 def mapRedirect():
     mapName = request.form["mapName"]
     mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
-    return redirect(urlfor(mapEdit(mapId)))
+    return redirect("/map/" + str(mapId) + "/edit")#url_for(mapEdit(mapId))
+
+#MAP SAVING
+@app.route("/saveData/", methods=["POST"])
+def mapSave():
+    mapData = request.form.get("canvasDict")
+    mapUtil.store(mapData)
+    print json.loads(mapData)
+    return True
+
 
 # Login Routes ======================================
 

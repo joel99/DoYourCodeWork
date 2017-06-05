@@ -788,6 +788,22 @@ var canvasToJSON = function(){
 	}
     }
     console.log(canvasJSON);
+<<<<<<< HEAD
+=======
+    $.ajax({
+	    type: "POST",
+	    url : "/saveData/",
+	    dataType: "json",
+	    data: {
+		"canvasDict" : canvasJSON
+	    },
+	    success: function(response) {
+		console.log("works");
+	    error: function(response) {
+		console.log("nope");
+	    }
+	});
+>>>>>>> d8652f0d77d2b9a06c2f4e3ab34e6c698ebc8da6
     return canvasJSON;
 }
 

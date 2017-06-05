@@ -1,6 +1,7 @@
 #import modules needed
 
 import datetime
+import time
 
 #initialize mongo database
 
@@ -24,8 +25,9 @@ Returns:
 """
 def exists( mapID ):
     finder = cM.find_one(
-        { "mapID" : mapID }
+        { "mapID" : int(mapID) }
         )
+    print "clearly " + str(mapID) + " does not exist"
     return finder is not None
 
 """
@@ -39,10 +41,11 @@ Returns:
 def ownsMap( uID, mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["uID"] == uID 
     else:
+        print str(uID) + " does not own " + str(mapID)
         return False
 
 """
@@ -55,7 +58,7 @@ Returns:
 def isPublished( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["published"] == 1
     else:
@@ -64,7 +67,7 @@ def isPublished( mapID ):
 def getMapName( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["mapName"]
     return None 
@@ -79,7 +82,7 @@ Returns:
 def getMapData( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["data"]
     return None
@@ -87,7 +90,7 @@ def getMapData( mapID ):
 def getTimeCreated( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["timeCreated"]
     return None
@@ -95,7 +98,7 @@ def getTimeCreated( mapID ):
 def getTimeUpdated( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : mapID }
+            { "mapID" : int(mapID) }
             )
         return finder["timeUpdated"]
     return None 
@@ -110,19 +113,52 @@ def makeNewMap( mapName, userID ) :
         doc = {}
         doc["mapID"] = counter_cM()
         doc["mapName"] = mapName
-        doc["uID"] = userID
+        doc["uID"] = int(userID)
         doc["published"] = 0
         doc["timeCreated"] = datetime.date.today().ctime()
+        doc["tCreated"] = time.time()
         doc["timeUpdated"] = datetime.date.today().ctime()
+        doc["tUpdated"] = time.time()
         doc["data"] = None
 
         cM.insert_one( doc )
-        return True
+        print "in fact, " + str(userID) + " owns " + str(doc["mapID"])
+        return doc["mapID"]
     except:
         return False
 
+def mapPull( mapID ):
+    finder = cM.find_one(
+        { "mapID" : int(mapID) }
+        )
+    meta = {}
+    meta["mapID"] = finder["mapID"] #check if fxn actually works
+    meta["mapName"] = finder["mapName"]
+    meta["uID"] = finder["uID"]
+    meta["published"] = finder["published"]
+    meta["timeCreated"] = finder["timeCreated"]
+    meta["timeUpdated"] = finder["timeUpdated"]
+    meta["data"] = finder["data"]
+    return meta
+
 def userFind( uID ):
-    
+    ret = []
+    finder = cM.find(
+        { "uID" : int(uID) },
+        sort = sort( "tUpdated", pymongo.DESCENDING )
+        )
+    for item in finder:
+        meta = {}
+        meta["mapID"] = item["mapID"]
+        meta["mapName"] = item["mapName"]
+        meta["uID"] = item["uID"] #check if fxn actually works
+        meta["published"] = item["published"]
+        meta["timeCreated"] = item["timeCreated"]
+        meta["timeUpdated"] = item["timeUpdated"]
+        meta["data"] = item["data"]
+        ret.append(meta)
+    return ret
+
 
 #helper functions
 
