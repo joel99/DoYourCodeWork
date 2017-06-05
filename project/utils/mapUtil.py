@@ -169,7 +169,7 @@ def getPage( PageNum, searchQuery ):
             start = (PageNum - 1) * 10
             end = start + 9
             ctr = 0
-            while len(ret) < 10 and start =< ctr and ctr < end:
+            while len(ret) < 10 and start <= ctr and ctr < end:
                 meta = {}
                 meta["mapID"] = item["mapID"]
                 meta["mapName"] = item["mapName"]
@@ -185,11 +185,11 @@ def getPage( PageNum, searchQuery ):
             { "mapName" : searchQuery },
             sort = sort( "tUpdated", pymongo.DESCENDING )
             )
-         for item in finder:
+        for item in finder:
             start = (PageNum - 1) * 10
             end = start + 9
             ctr = 0
-            while len(ret) < 10 and start =< ctr and ctr < end:
+            while len(ret) < 10 and start <= ctr and ctr < end:
                 meta = {}
                 meta["mapID"] = item["mapID"]
                 meta["mapName"] = item["mapName"]
