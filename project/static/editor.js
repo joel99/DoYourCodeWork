@@ -491,7 +491,7 @@ var elClick = function(e){
 	clrMonitor();
 	event.stopPropagation();
 	updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
-	addMonitorField("Name");
+	addMonitorField("Name", "name");
 	updateMonitor("Id", this.getAttribute("id"));
 
 	switch (this.getAttribute("customType")){
@@ -506,7 +506,7 @@ var elClick = function(e){
 	    break;
 	case "cnxn":
 	    updateMonitor("Link", this.getAttribute("link"));
-	    addMonitorField("Link");
+	    addMonitorField("Link", "link");
 	    clickedEl = this;
 	    break;
 	}	
@@ -631,10 +631,22 @@ var updateMonitor = function(s1, s2){
     monitor.appendChild(s);
 }
 
-var addMonitorField = function(fieldName){//to be changed
-    var f = document.createElement("p");
-    f.innerHTML = fieldName;
-    monitor.appendChild(f);
+var addMonitorField = function(fieldName, attr){//to be changed
+    var d = document.createElement("div");
+    var s = document.createElement("span");
+    s.innerHTML = fieldName + " ";
+    var f = document.createElement("input");
+    f.setAttribute("srcAttr": attr);
+    f.innerHTML = clickedEl.getAttribute(attr);
+    d.appendChild(s);
+    d.appendChild(f);
+    d.addEventListener("change", updateField);
+    monitor.appendChild(d);
+}
+
+var updateField = function(){
+    console.log("field has changed to " + f.innerHTML);
+    clickedEl.setAttribute(f.getAttribute("srcAttr"), f.innerHTML);
 }
 
 var pullAJAXData = function(id){

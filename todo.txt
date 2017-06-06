@@ -9,8 +9,8 @@
 
 
 In ORDER:
-1. Ajax bug fix
-2. Test map making
+1. Map publishing (Shamaul / Joel) - distinguish private and public maps
+2. Fields - Users should be able to edit element properties via monitor
 3. Test map saving
 4. Test map loading
 5. Test map viewing
