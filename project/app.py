@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, session, url_for, redirect
 from utils import users, mapUtil, gallery
 import json, os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "secrets"
+
+UPLOAD_FOLDER = "/maps/"
+ALLOWED_EXTENSIONS = set(['jpg', 'png'])
 
 # Site Navigation
 
@@ -114,6 +118,21 @@ def mapLoad():
     mapData = mapUtil.getMapData(int(session["mID"]))    
     return json.dumps(mapData)
 
+def allowed_file(filename):
+	return "." in filename and filename.rsplit( ".", 1 )[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route("/map/upload/<mapID>", methods=["POST"])
+def upload(mapID):
+	if "file" not in request.files:
+		return redirect( "/map/<mapID>/edit" )
+	f = request.files["file"]
+	if f.filename == '':
+		return redirect( "/map/<mapID>/edit" )
+	if f and allowed_file(f.filename):
+		filename = secure_filename(f.filename)
+		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		mapUtil.addImage(os.path.abspath( filename ), mapID)
+		return redirect( "/map/<mapID>/edit" )
 
 # Login Routes ======================================
 

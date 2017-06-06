@@ -103,6 +103,14 @@ def getTimeUpdated( mapID ):
         return finder["timeUpdated"]
     return None 
 
+def getImages( mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : int(mapID) }
+            )
+        return finder["outline"]
+    return None
+
 """
 makeNewMap( mapName, uID )
 Given:
@@ -119,6 +127,7 @@ def makeNewMap( mapName, userID ) :
         doc["tCreated"] = time.time()
         doc["timeUpdated"] = datetime.date.today().ctime()
         doc["tUpdated"] = time.time()
+        doc["outline"] = []
         doc["data"] = None
 
         cM.insert_one( doc )
@@ -198,6 +207,24 @@ def getPage( PageNum, searchQuery ):
             return ret
         
 
+def addImage( url, mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : int(mapID) }
+        )  
+        cM.update_one(
+            {"mapID" : int(mapID)},
+            {"$set" :
+                [
+                    {"outline" : finder["outline"].append(url)},
+                    {"timeUpdated" :  datetime.date.today().ctime()},
+                    {"tUpdated" : time.time()}
+                    ]
+            }
+            )
+        return True
+    return False
+            
 #helper functions
 
 def counter_cM():

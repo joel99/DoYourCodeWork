@@ -3,36 +3,38 @@
 
 
 <div class= "container">
-  {% for i in range(0, mapLinkData|length, 3) %} <!-- update mapLinkData thing -->
+  {% for i in range(0, mapLinkData|length, 4) %} <!-- update mapLinkData thing -->
+  
+  {% if not loop.last %}
   <div class="row">
-    {% for j in range(loop.index0, loop.index0 + 3) %}
-    <div class="col">
+    
+    {% for j in range(loop.index0, loop.index0 + 4) %}
+    <div class="col-md-3">
       <div class="thumbnail">
         <img src="..." alt="...">
         <div class="caption">
-          j
-          mapLinkData[j]
+          {{i + j}}
+          {{mapLinkData[i + j]}}
 
-          <form action = "{{mapID['url']}}" method = "POST"/> <!-- change the mapID thing -->
-            <button type="submit" id="mapButton" name="{{mapID['name']}}" value="">{{mapID['name']}}</button>
+          
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
+  {% endif %}
 
   {% if loop.last %}
   <div class="row">
-    {% for k in range(i, i + mapLinkData|length % 3) %}
-    <div class="col">
+    {% for k in range(i + 1, i + mapLinkData|length % 4) %}
+    <div class="col-md-3">
       <div class="thumbnail">
         <img src="..." alt="...">
 
         <div class="caption">
-          k
-          mapLinkData[k]
-          <form action = "{{mapID['url']}}" method = "POST"/> <!-- change the mapID thing -->
-            <button type="submit" id="mapButton" name="{{mapID['name']}}" value="">{{mapID['name']}}</button>
+          {{k}}
+          {{mapLinkData[k]}}
+          
         </div>
       </div>
     </div>
