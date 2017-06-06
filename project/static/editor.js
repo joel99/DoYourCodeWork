@@ -668,6 +668,22 @@ var loadMap = function(){//initalization script
 	    //page.setAtribute( "num", pageData["num"] ); //not sure we need this
 	    page.setAttribute( "isCurrent", false );
 	    page.setAttribute( "id", "viewport" );
+
+	    if (pageData["bgUrl"] != null && pageData["bgUrl"] != ""){
+		page.append("defs")
+		    .append('pattern')
+		    .attr('id', pageData["num"].toString() + "bg")
+		    .attr('patternUnits', 'userSpaceOnUse')
+		    .attr('width', 4)
+		    .attr('height', 4)
+		    .append("image")
+		    .attr("xlink:href", "locked.png")
+		    .attr('width', 4)
+		    .attr('height', 4);
+	    }
+	    //if there's a bg image, attach it.
+	    
+	    
 	    for (item in pageData["data"]){
 		var el;
 		switch (item["type"]){
@@ -861,3 +877,5 @@ var canvasToJSON = function(){
 var refreshIDs = function(){
     //to prevent overflow (long term sustainability)
 }
+
+    //i need to do the image stuff on the page.
