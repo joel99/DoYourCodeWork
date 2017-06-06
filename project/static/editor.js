@@ -460,11 +460,21 @@ var canvasClick = function(e){
 		logStatus("No self-attachment!");
 	    }
 	    line.setAttribute("p2", closest.getAttribute("id"));
-	    //DO
-	    //if (getActivePage().getPaths()){//there exists such a path already
-	//	getActivePage().removeChild(line); //prevent double path-ing
-	//	logStatus("The path already exists!");
-	  //  }
+	    var page = getActivePage();
+	    for (i = 0; i < page.children.length - 1; i++){
+		var child = page.childNodes[i];
+		if (child.getAttribute("customType") == "path"){
+		    if ((child.getAttribute("p1") == line.getAttribute("p1") &&
+		         child.getAttribute("p2") == line.getAttribute("p2")) ||
+		       (child.getAttribute("p1") == line.getAttribute("p2") &&
+		         child.getAttribute("p2") == line.getAttribute("p1")) ||
+		       ){
+			page.removeChild(line);
+			logStatus("The path already exists!");
+			break;
+		    }
+		}
+	    }
 	    line.addEventListener("click", elClick);
 	}
 	break;
