@@ -16,9 +16,16 @@
     <div class="col-md-8">
       <svg id="editorCanvas" xmlns="http://www.w3.org/2000/svg" width = "1000", height = "500" style="border:1px solid #000000"/>
 
-      
+      	<div id="mapTitle"></div>
+	<form id="form_upload" action="/map/upload/<mapID>" method="post" enctype="multipart/form-data">
+	  <label class="control-label" for="upload">
+	    Map Upload
+	  </label>
+	  <input type="file" class="form-control" id="upload_input" name="upload" onchange="this.form.submit();">
+      </form>
       <h1>
-	<div id="mapTitle"></div>
+
+	
       </h1>    
       Page: <div id="pgTitle">      
 	 
@@ -38,14 +45,6 @@
       <button id="addPgBtn">Add Page</button>
       <button id="nextPgBtn">Next Page</button>
       <button id="prevPgBtn">Prev Page</button>
-      <form id="form_upload" action="/map/upload/" method="post" enctype="multipart/form-data">
-	<div class="form-group hidden">
-	  <label class="control-label" for="upload">
-	    Please Upload a file
-	  </label>
-	  <input type="file" class="form-control" id="upload_input" name="upload" onchange="this.form.submit();">
-	</div>
-      </form>
       <button id="delMapBtn">Delete Map</button>
       <button id="pubMapBtn">Publish Map</button>
       <button id="saveMapBtn">Save Map</button>
@@ -54,17 +53,15 @@
 
       
     <br>
+    
+    
    
 {% endblock %}
 
 
 {% block js %}
-<<<<<<< Updated upstream
-    <script src="../static/editor.js"></script>
-    <script src="../static/editorBtns.js"></script>
-=======
+    <script src="/static/editorBtns.js"></script>
     <script src="/static/editor.js"></script>
->>>>>>> Stashed changes
-    <!--<script src="../static/require.js"></script>-->
-    <!--<script src="../static/svg-pan-zoom.js"></script>-->
+    <!--<script src="/static/require.js"></script>-->
+    <!--<script src="/static/svg-pan-zoom.js"></script>-->
 {% endblock %}
