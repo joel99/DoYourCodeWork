@@ -84,6 +84,7 @@ def mapEditTest():
 
 @app.route("/map/<mapID>/edit")
 def mapEdit(mapID):
+    session["mID"] = mapID
     if not mapUtil.ownsMap(getUserID(), mapID):
         return redirect( url_for('root') )
     else:
@@ -95,8 +96,9 @@ def mapEdit(mapID):
 @app.route("/create/", methods=["POST"])
 def mapRedirect():
     mapName = request.form["mapName"]
-    mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
-    return redirect("/map/" + str(mapId) + "/edit")#url_for(mapEdit(mapId))
+    mapID = mapUtil.makeNewMap(mapName, getUserID()) #returns id
+    session["mID"] = mapID
+    return redirect("/map/" + str(mapID) + "/edit")#url_for(mapEdit(mapID)
 
 #MAP SAVING
 @app.route("/saveData/", methods=["POST"])
@@ -109,10 +111,8 @@ def mapSave():
 #MAP LOAD
 @app.route("/loadData/", methods=["GET"])
 def mapLoad():
-    mapData = request.form.get("mapID")
-    mapUtil.store(mapData)
-    print json.loads(mapData)
-    return True
+    mapData = mapUtil.getMapData(int(session["mID"]))
+    return mapData
 
 
 # Login Routes ======================================
@@ -168,6 +168,10 @@ def getUserID():
         return session["uID"]
     else:
         return None
+
+def removeMapCookie():
+    if "mID" in session:
+        session.pop("mID")
 
 if __name__ == "__main__":
     app.debug = True
