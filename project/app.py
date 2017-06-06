@@ -106,6 +106,12 @@ def mapSave():
     print json.loads(mapData)
     return True
 
+#MAP LOAD
+@app.route("/loadData/", methods=["GET"])
+def mapLoad():
+    
+    return True
+
 
 # Login Routes ======================================
 
