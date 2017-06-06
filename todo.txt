@@ -1,35 +1,20 @@
-A lot of stuff
-
-@Shamaul, fill in headers for userDb.py , mapUtil.py (done)
-@Shamaul, actually writing those functions with mongo (done)
-
-Notice to frontend:
-       skipped isLoggedIn for some pages that you have to be loggedIn to check, consider making another template that has a logged in toolbar by default
-
-SVG Background Image: http://stackoverflow.com/questions/3796025/fill-svg-path-element-with-a-background-image
-
-Thigns to do:
-
-Link to create map
-
-Users can now make maps, 
-Shamaul, once you make the
-
-In app.py - pass userID mapName
-- timestamp
-- user
-- map name
-- map id
-- returns id
-
-- given the id
-- pull all that data
-
-- given the userID
-- pull all maps made by user
+- authentication login messages (return in flasK)
+- new attributes for editor elements (color, weight)
+- finding algorithm
+- instructions generated
+- ajax bug fix
+- fit file images to canvas
+- svg panning/etc
+- editor debug
 
 
-- pull most recent entries
-
-
-- Shamaul, run through db code and make sure there are no type errors (stored as int right? be careful when comparing)
+In ORDER:
+1. Ajax bug fix
+2. Test map making
+3. Test map saving
+4. Test map loading
+5. Test map viewing
+6. Test route generation (NOT DONE - Richard)
+7. Output page (someone write this)
+8. Fit file images to canvas
+9. 

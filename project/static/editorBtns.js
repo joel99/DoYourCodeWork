@@ -10,7 +10,8 @@ var delPgBtn = document.getElementById("delPgBtn");
 var delMapBtn = document.getElementById("delMapBtn");
 var pubMapBtn = document.getElementById("pubMapBtn");
 var saveMapBtn = document.getElementById("saveMapBtn");
-var addPgBtn = document.getElementById("addPgBtn"); //file upload
+var addPgBtn = document.getElementById("addPgBtn");
+var uploadImgBtn = document.getElementById("uploadImgBtn");
 
 //note: might be replaced with better navigation system
 var nextPgBtn = document.getElementById("nextPgBtn");
@@ -35,3 +36,4 @@ nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
 saveMapBtn.addEventListener("click", saveMap);
+//uploadImgBtn.addEventListener("click", uploadImg);

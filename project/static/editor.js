@@ -467,8 +467,8 @@ var canvasClick = function(e){
 		    if ((child.getAttribute("p1") == line.getAttribute("p1") &&
 		         child.getAttribute("p2") == line.getAttribute("p2")) ||
 		       (child.getAttribute("p1") == line.getAttribute("p2") &&
-		         child.getAttribute("p2") == line.getAttribute("p1")) ||
-		       ){
+			child.getAttribute("p2") == line.getAttribute("p1"))
+			){
 			page.removeChild(line);
 			logStatus("The path already exists!");
 			break;
@@ -638,22 +638,26 @@ var addMonitorField = function(fieldName){//to be changed
 }
 
 var pullAJAXData = function(id){
+    var mapData = "";
     $.ajax({
-	    type: "GET",
 	    url: "/loadData/",
-	    data: {"mapID":id},
+	    type: "GET",
+	    data: "",
 	    dataType: "json",
 	    success: function(data) {
 		console.log("pulled Data");
-		return data;
-	    });
-	console.log("unable to pull Data");
-    return null;
+		mapData = data;
+	    },
+		error: function() {
+		console.log("unable to pull Data");
+	    }
+	});
+    return mapData;
 }
 
 //LOADING PAGE : needs refactoring
 var loadMap = function(){//initalization script
-    var mapData = pullAJAXData(id);
+    var mapData = pullAJAXData(); //put in a parameter so mapData for an id is pulled
     //loadTitle(mapData["title"]); //UNCOMMENT
     if (//mapData["canvasData"] != null // UNCOMMENT
        mapData != null){
@@ -668,6 +672,22 @@ var loadMap = function(){//initalization script
 	    //page.setAtribute( "num", pageData["num"] ); //not sure we need this
 	    page.setAttribute( "isCurrent", false );
 	    page.setAttribute( "id", "viewport" );
+
+	    if (pageData["bgUrl"] != null && pageData["bgUrl"] != ""){
+		page.append("defs")
+		    .append('pattern')
+		    .attr('id', pageData["num"].toString() + "bg")
+		    .attr('patternUnits', 'userSpaceOnUse')
+		    .attr('width', 4)
+		    .attr('height', 4)
+		    .append("image")
+		    .attr("xlink:href", "locked.png")
+		    .attr('width', 4)
+		    .attr('height', 4);
+	    }
+	    //if there's a bg image, attach it.
+	    
+	    
 	    for (item in pageData["data"]){
 		var el;
 		switch (item["type"]){
@@ -766,7 +786,8 @@ var saveMap = function(){
 	    data: JSON.stringify(mapJSON),
 	    success: function(response) {
 		console.log("works");
-	    error: function(response) {
+	    },
+	    error: function() {
 		console.log("nope");
 	    }
 	});
@@ -851,6 +872,7 @@ var canvasToJSON = function(){
 	    },
 	    success: function(response) {
 		console.log("works");
+	    },
 	    error: function(response) {
 		console.log("nope");
 	    }
@@ -861,3 +883,5 @@ var canvasToJSON = function(){
 var refreshIDs = function(){
     //to prevent overflow (long term sustainability)
 }
+
+    //i need to do the image stuff on the page.
