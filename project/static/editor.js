@@ -659,8 +659,18 @@ var pullAJAXData = function(id){
 var loadMap = function(){//initalization script
     var mapData = pullAJAXData(); //put in a parameter so mapData for an id is pulled
     //loadTitle(mapData["title"]); //UNCOMMENT
-    if (//mapData["canvasData"] != null // UNCOMMENT
-       mapData != null){
+    //        if (//mapData["canvasData"] != null) // UNCOMMENT
+    //	    mapData != null){
+    console.log(mapData);
+    	if (mapData == "") {
+	    totalPages = 0; //load
+	    idCount = 0; //simple id scheme, just count up every time element is made
+	    addPage();
+	    page = getActivePage();    
+	    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
+	    mode = DEFAULT;
+    	    console.log("jsMapDataNull");
+    	} else {
         var canvasJSON = mapData["canvasData"]; //and then process it
 	//totalPages = canvasJSON["pages"];
 	totalPages = 0;
@@ -720,14 +730,6 @@ var loadMap = function(){//initalization script
             setPage(1);
 	}
 
-    }
-    else{ //default loading
-	totalPages = 0; //load
-	idCount = 0; //simple id scheme, just count up every time element is made
-	addPage();
-	page = getActivePage();    
-	pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
-	mode = DEFAULT;
     }
 
 }

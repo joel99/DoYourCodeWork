@@ -111,8 +111,8 @@ def mapSave():
 #MAP LOAD
 @app.route("/loadData/", methods=["GET"])
 def mapLoad():
-    mapData = mapUtil.getMapData(int(session["mID"]))
-    return mapData
+    mapData = mapUtil.getMapData(int(session["mID"]))    
+    return json.dumps(mapData)
 
 
 # Login Routes ======================================
