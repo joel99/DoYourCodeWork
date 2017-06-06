@@ -3,48 +3,53 @@
 
 {% block content %}
    
+   <h2>Map Editor</h2>
+   
     <div class="col-md-2">
-      <button id="ptBtn">Point</button>
-      <button id="nodeBtn">Node</button>
-      <button id="pathBtn">Path</button>
-      <button id="cnxnBtn">Connection</button>
-      <button id="defBtn">Default</button>
+      <button id="ptBtn">Point</button><br>
+      <button id="nodeBtn">Node</button><br>
+      <button id="pathBtn">Path</button><br>
+      <button id="cnxnBtn">Connection</button><br>
+      <button id="defBtn">Default</button><br>
       <button id="delElBtn">Delete Element</button>
+      
     </div>
 
 
     <div class="col-md-8">
       <svg id="editorCanvas" xmlns="http://www.w3.org/2000/svg" width = "1000", height = "500" style="border:1px solid #000000"/>
 
-      	<div id="mapTitle"></div>
-	<form id="form_upload" action="/map/upload/" method="post" enctype="multipart/form-data">
-	  <label class="control-label" for="upload">
-	    Map Upload
-	  </label>
-	  <input type="file" class="form-control" id="upload_input" name="upload" onchange="this.form.submit();">
-      </form>
-      <h1>
-
+     
 	
-      </h1>    
-      Page: <div id="pgTitle">      
-	 
-      </div>
+      <h2>
+      {{mapLinkData.mapName}} | Page:  <div id="pgTitle"></div>   
+	
+      </h2>    
       <br>
       <p>Status: <span id="status"></span></p>
       <br>
-      <div id="monitor">
+	 
+	 <div id="monitor">
 	
       </div>
+	 
+      </div>
       
-    </div>
+      
+      
+  
 
     <div class="col-md-2">
-      <button id="clrBtn">Clear</button>
-      <button id="delPgBtn">Delete Page</button>
-      <button id="addPgBtn">Add Page</button>
-      <button id="nextPgBtn">Next Page</button>
-      <button id="prevPgBtn">Prev Page</button>
+      <button id="clrBtn">Clear</button><br>
+      <button id="delPgBtn">Delete Page</button><br>
+      <button id="addPgBtn">Add Page</button><br>
+      <button id="nextPgBtn">Next Page</button><br>
+      <button id="prevPgBtn">Prev Page</button><br>
+      
+      <button id="delMapBtn">Delete Map</button><br>
+      <button id="pubMapBtn">Publish Map</button><br>
+      <button id="saveMapBtn">Save Map</button><br>
+      
       <div id="uploadImgBtn">
       <form id="form_upload" action="/map/upload/" method="post" enctype="multipart/form-data">
 	<div class="form-group hidden">
@@ -55,9 +60,6 @@
 	</div>
       </form>
       </div>
-      <button id="delMapBtn">Delete Map</button>
-      <button id="pubMapBtn">Publish Map</button>
-      <button id="saveMapBtn">Save Map</button>
       <br>
     </div>
 

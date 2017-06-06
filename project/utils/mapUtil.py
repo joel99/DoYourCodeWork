@@ -29,6 +29,7 @@ def exists( mapID ):
         { "mapID" : int(mapID) }
         )
     print "clearly " + str(mapID) + " does not exist"
+    print finder is not None
     return finder is not None
 
 """
@@ -85,7 +86,7 @@ def getMapData( mapID ):
         finder = cM.find_one(
             { "mapID" : int(mapID) }
             )
-        return finder["data"]
+        return finder
     return None
 
 def getTimeCreated( mapID ):

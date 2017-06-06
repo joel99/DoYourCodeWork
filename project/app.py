@@ -71,8 +71,8 @@ def help():
 @app.route("/map/<mapID>")
 def mapPage(mapID):
     locked = True
-    if isPublished(mapID):
-        locked = False
+   # if isPublished(mapID):
+   #     locked = False
     if isLoggedIn():
         uID = getUserID()
         if mapUtil.ownsMap(uID, mapID):
@@ -80,7 +80,7 @@ def mapPage(mapID):
             locked = False
     #if map is public, all viewers can view it (unlocked)
     #if map is private, only owner can view it (and gets link to edit on page)
-    return render_template( "map.html", isLoggedIn = isLoggedIn(), owned = owns, lock = locked )
+    return render_template( "mapView.html", isLoggedIn = isLoggedIn(), owned = owns, lock = locked )
 
 #EDITING PAGE
 @app.route("/map/edit/")
@@ -95,8 +95,7 @@ def mapEdit(mapID):
     else:
         session["mID"] = mapID
         data = mapUtil.getMapData(mapID)
-        print data
-        return render_template( "mapEdit.html", isLoggedIn = isLoggedIn() )
+        return render_template( "mapEdit.html", isLoggedIn = isLoggedIn() , mapLinkData = data)
 
 #MAP REDIRECT PAGE
 @app.route("/create/", methods=["POST"])
