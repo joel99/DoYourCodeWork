@@ -1,6 +1,7 @@
-.log{
-	min-width: 250px;
-	padding: 15px 15px 0;
+.input-lg {
+    font-family: inherit;
+    font-size: 90px;
+    line-height: inherit;
 }
 
 h1,h2,h3,h4{
@@ -13,27 +14,50 @@ h1,h2,h3,h4{
 }
 
 body{
-	height: 100%;
+    height: 100%;
+    
 }
 
+#content{
+    border-radius: 0px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: blue; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #4F00BC, #29ABE2); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #4F00BC, #29ABE2); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #4F00BC, #29ABE2); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #4F00BC, #29ABE2); /* Standard syntax */
+}
+
+#homeinput{
+    height: 100px;
+}
 
 .container{
-	color: white;	
+    color: white;
+    border-radius: 0px;
 }
+
+
 
 .jumbotron{
 	background: none;
 }
 
-.picture{
-	border-right: 2px solid white;
-	margin-right: 15px;
 
-}
 
 .navbar{
-	background: white;
-	border: none;
+    width: 100%;
+    background: white;
+    border-radius: 0px;
+    margin-bottom: 1px;
+    box-shadow: 0 4px 2px -2px black;
+    position: relative;
+}
+
+.navbar-right{
+    margin-right: 0px;
 }
 
 .nav.navbar-nav li a{
@@ -50,30 +74,10 @@ body{
 	margin:0 auto;
 }
 
-.track{
-	min-height: 20px;
-	padding-bottom: 10px;
-	padding-top;
-	min-width: 400px;
-	display: inline-block;
-	text-shadow: 2px 2px black;
-}
+
 
 #sim{
 	text-shadow: 2px 2px black;
-}
-
-#infobox{
-	margin-top: 20px;
-}
-
-#back{
-	background: url(http://i.huffpost.com/gen/1361872/images/o-VINYL-facebook.jpg);
-}
-
-#content{
-     /padding-top: 80px;
- 
 }
 
 @keyframes fade{

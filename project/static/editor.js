@@ -7,6 +7,8 @@
 //add file upload/download for background images
 //pretty submission areas
 
+//to do: add weights on paths
+
 //Notes:
 //you can edit map name in main dashboard AND map edit page (for user friendliness)
 
@@ -455,8 +457,14 @@ var canvasClick = function(e){
 	    if (distance(line.getAttribute("x1"), line.getAttribute("y1"),
 			 line.getAttribute("x2"), line.getAttribute("y2")) < 5){
 		getActivePage().removeChild(line);//prevent self-attachment
+		logStatus("No self-attachment!");
 	    }
 	    line.setAttribute("p2", closest.getAttribute("id"));
+	    //DO
+	    //if (getActivePage().getPaths()){//there exists such a path already
+	//	getActivePage().removeChild(line); //prevent double path-ing
+	//	logStatus("The path already exists!");
+	  //  }
 	    line.addEventListener("click", elClick);
 	}
 	break;

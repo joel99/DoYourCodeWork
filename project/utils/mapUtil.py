@@ -159,6 +159,48 @@ def userFind( uID ):
         ret.append(meta)
     return ret
 
+def getPage( PageNum, searchQuery ):
+    ret = []
+    if searchQuery == "":
+        finder = cM.find(
+            sort = sort( "tUpdated", pymongo.DESCENDING )
+            )
+        for item in finder:
+            start = (PageNum - 1) * 10
+            end = start + 9
+            ctr = 0
+            while len(ret) < 10 and start <= ctr and ctr < end:
+                meta = {}
+                meta["mapID"] = item["mapID"]
+                meta["mapName"] = item["mapName"]
+                meta["uID"] = item["uID"] #check if fxn actually works
+                meta["published"] = item["published"]
+                meta["timeCreated"] = item["timeCreated"]
+                meta["timeUpdated"] = item["timeUpdated"]
+                meta["data"] = item["data"]
+                ret.append(meta)
+            return ret
+    else:
+        finder = cM.find(
+            { "mapName" : searchQuery },
+            sort = sort( "tUpdated", pymongo.DESCENDING )
+            )
+        for item in finder:
+            start = (PageNum - 1) * 10
+            end = start + 9
+            ctr = 0
+            while len(ret) < 10 and start <= ctr and ctr < end:
+                meta = {}
+                meta["mapID"] = item["mapID"]
+                meta["mapName"] = item["mapName"]
+                meta["uID"] = item["uID"] #check if fxn actually works
+                meta["published"] = item["published"]
+                meta["timeCreated"] = item["timeCreated"]
+                meta["timeUpdated"] = item["timeUpdated"]
+                meta["data"] = item["data"]
+                ret.append(meta)
+            return ret
+        
 
 #helper functions
 

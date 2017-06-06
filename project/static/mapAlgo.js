@@ -1,11 +1,5 @@
-import editor.js; //not sure
-
-editor.loadPage(); //not sure 2
-
-// so after loading, the user can choose two nodes
-
-var node1;
-var node2;
+editor.loadMap();
+var mapData = pullUserAJAXData(); //no metadata, just item types?
 
 var chooseNode = function () {
     //cnxn stuff?
@@ -108,7 +102,146 @@ var makeEdges = function (nodes) {
 };
 
 
+//returns dict of lists of dictionaries : {nodes, pts, paths, cnxns}
+/*
+  {
+  "node": [{id}, {id}, ...]//nodes list
+  "pt": [{id}, {id}, ...]//pt list
+  "path": [{id, p1, p2}, {id, p1, p2} ...]//path list
+  "cnxn":[{id, link}, {id, link}]//cnxn list
+  }
+*/
+var scrapeMapData = function(){
+    var ret = {};
+    ret["node"] = [];
+    ret["pt"] = [];
+    ret["path"] = [];
+    ret["cnxn"] = [];
+    
+    if (mapData != null){
+	var canvasJSON = mapData["canvasData"];
+	for (pageData in canvasJSON["canvas"]){
+	    var el;
+	    for (item in pageData["data"]){
+		el = {"id": item["id"]};
+		switch(item["type"]){
+		case "path":
+		    el["p1"] = item["p1"];
+		    el["p2"] = item["p2"];
+		    break;
+		case "cnxn":
+		    el["link"] = item["link"]; 
+		    break;
+		}
+		ret[item["type"]].push(el);
+	    }
+	}
+    }
+    return ret;
+}
 
+//updates scraped map data
+/*
+  [
+  [{id, [paths]}, {id, [paths]}, ...]//nodes list - alternative: augment with adjacent node
+  [{id}, {id}, ...]//pt list same as nodes list
+  [{id, p1, p2}, {id, p1, p2} ...]//path list
+  [{id, link}, {id, link}]//cnxn list
+  ]
+*/
+var augmentPoints = function(data){
+    for (path in data["path"]){
+	//find thing with this id
+	var p1Found = false;
+	var p2Found = false;
+	for (node in data["node"]){
+	    if (!p1Found && node["id"] == path["p1"]){
+		p1Found = true;
+		node["paths"].push(path["id"]);
+	    }
+	    if (!p2Found && node["id"] == path["p2"]){
+		p2Found = true;
+		node["paths"].push(path["id"]);
+	    }
+	    if (p1Found && p2Found){
+		break;
+	    }
+	}
+	for (pt in data["pt"]){
+	    if (!p1Found && pt["id"] == path["p1"]){
+		p1Found = true;
+		pt["paths"].push(path["id"]);
+	    }
+	    if (!p2Found && pt["id"] == path["p2"]){
+		p2Found = true;
+		pt["paths"].push(path["id"]);
+	    }
+	    if (p1Found && p2Found){
+		break;
+	    }
+	}
+	for (cnxn in data["cnxn"]){
+	    if (!p1Found && cnxn["id"] == path["p1"]){
+		p1Found = true;
+		cnxn["paths"].push(path["id"]);
+	    }
+	    if (!p2Found && cnxn["id"] == path["p2"]){
+		p2Found = true;
+		cnxn["paths"].push(path["id"]);
+	    }
+	    if (p1Found && p2Found){
+		break;
+	    }
+	}
+	
+    }
+    return data;
+}
 
+//...
+var getOtherEnd = function(pathID, ptID){//
+    
+}
 
+//Selection mechanism
+var editorCanvas = document.getElementById("editorCanvas");
 
+var mousex, mousey;
+
+editorCanvas.addEventListener("mousemove", function(e) {
+    mousex = e.offsetX;
+    mousey = e.offsetY;
+});
+
+var clickedEl = null; //tracking
+
+var node1;
+var node2;
+
+var elClick = function(e){
+    if (mode == DEFAULT){
+	clrMonitor();
+	event.stopPropagation();
+	updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
+	addMonitorField("Name");
+	updateMonitor("Id", this.getAttribute("id"));
+
+	switch (this.getAttribute("customType")){
+	case "pt":
+	case "node":
+	    clickedEl = this;
+	    break;
+	case "path":
+	    updateMonitor("Point One", this.getAttribute("p1"));
+	    updateMonitor("Point Two", this.getAttribute("p2"));
+	    clickedEl = this;
+	    break;
+	case "cnxn":
+	    updateMonitor("Link", this.getAttribute("link"));
+	    addMonitorField("Link");
+	    clickedEl = this;
+	    break;
+	}	
+	console.log(this.getAttribute("customType") + " clicked.");
+    }
+}
