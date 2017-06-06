@@ -13,7 +13,7 @@
     <!-- Navigation Bar-->
     <nav class="navbar navbar-default">
       <div class="navbar-header">
-        <a class="navbar-brand" href="/">TraX Insert Image Logo Here </a>
+        <a class="navbar-brand" href="/"><img src="/static/images/logo.PNG" id="logo"></img></a>
       </div>
 
       <div class="navbar-content">
@@ -48,8 +48,6 @@
             </ul>
           </li>
 	  
-          <li><a href="">Store</a></li>
-          <li><a href="">Inventory</a></li>
 
           {% endif %}
           <li><a href="/help">Help</a></li>
@@ -93,10 +91,10 @@
    
     <div id="content">
       <div id="messagediv">
-	{{message}}
+	      <h2>{{message}}</h2>
       </div>
 
-      Hello
+      
       {% block content %}
       {% endblock %}
     </div>
@@ -121,7 +119,7 @@
               <input type="submit" name="login" value="Login" class="btn btn-secondary">
             </form>
           </div>
-1        </div>
+        </div>
       </div>
     </div>
 

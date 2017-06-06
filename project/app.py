@@ -9,6 +9,8 @@ app.secret_key = "secrets"
 UPLOAD_FOLDER = "/maps/"
 ALLOWED_EXTENSIONS = set(['jpg', 'png'])
 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # Site Navigation
 
 # TODO:
@@ -55,7 +57,7 @@ def gallerySearch():
 
 @app.route("/gallery/mymaps/")
 def mymaps():
-    data = []
+    data = mapUtil.userFind(getUserID())
     #data = retrieve my maps function
     if len(data) == 0 or data == None:
         return render_template("gallery.html", isLoggedIn = isLoggedIn(), message = "You have no maps! Create one!")
@@ -91,6 +93,7 @@ def mapEdit(mapID):
     if not mapUtil.ownsMap(getUserID(), mapID):
         return redirect( url_for('root') )
     else:
+        session["mID"] = mapID
         data = mapUtil.getMapData(mapID)
         print data
         return render_template( "mapEdit.html", isLoggedIn = isLoggedIn() )
@@ -123,17 +126,23 @@ def allowed_file(filename):
 	return "." in filename and filename.rsplit( ".", 1 )[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/map/upload/", methods=["POST"])
-def upload(mapID):
-	if "file" not in request.files:
-		return redirect( "/map/<mapID>/edit" )
-	f = request.files["file"]
-	if f.filename == '':
-		return redirect( "/map/<mapID>/edit" )
-	if f and allowed_file(f.filename):
-		filename = secure_filename(f.filename)
+def upload():
+    if "upload" not in request.files:
+        print request.files
+        print "nope"
+        return redirect(url_for( "mapEdit", mapID = session["mID"]) )
+    f = request.files["upload"]
+    if f.name == '':
+        print "also nope"
+        return redirect(url_for( "mapEdit", mapID = session["mID"]))
+    if f and allowed_file(f.name):
+		filename = secure_filename(f.name)
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		mapUtil.addImage(os.path.abspath( filename ), mapID)
-		return redirect( "/map/<mapID>/edit" )
+		mapUtil.addImage(os.path.abspath( filename ), session["mID"])
+		print "nice"
+		return redirect(url_for( "mapEdit", mapID = session["mID"]))
+    print allowed_file(f.name)
+    return redirect(url_for( "mapEdit", mapID = session["mID"]))
 
 # Login Routes ======================================
 
@@ -191,5 +200,7 @@ def getUserID():
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
-#    app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
+    #app.run()
+    app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
+
+

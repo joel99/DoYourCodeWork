@@ -2,6 +2,7 @@
 
 import datetime
 import time
+import userDb
 
 #initialize mongo database
 import pymongo 
@@ -160,6 +161,7 @@ def userFind( uID ):
         meta["mapID"] = item["mapID"]
         meta["mapName"] = item["mapName"]
         meta["uID"] = item["uID"] #check if fxn actually works
+        meta["user"] = userDb.getUsername(item["uID"])
         meta["published"] = item["published"]
         meta["timeCreated"] = item["timeCreated"]
         meta["timeUpdated"] = item["timeUpdated"]
@@ -171,39 +173,53 @@ def getPage( PageNum, searchQuery ):
     ret = []
     if searchQuery == "":
         finder = cM.find().sort( "tUpdated", pymongo.DESCENDING )
+        start = (int(PageNum) - 1) * 12
+        end = start + 12
+        ctr = 0
         for item in finder:
-            start = (int(PageNum) - 1) * 10
-            end = start + 9
-            ctr = 0
-            while len(ret) < 10 and start <= ctr and ctr < end:
-                meta = {}
-                meta["mapID"] = item["mapID"]
-                meta["mapName"] = item["mapName"]
-                meta["uID"] = item["uID"] #check if fxn actually works
-                meta["published"] = item["published"]
-                meta["timeCreated"] = item["timeCreated"]
-                meta["timeUpdated"] = item["timeUpdated"]
-                meta["data"] = item["data"]
-                ret.append(meta)
-            return ret
+            if ctr >= start:
+                if ctr < end:
+                    meta = {}
+                    meta["mapID"] = item["mapID"]
+                    meta["mapName"] = item["mapName"]
+                    meta["uID"] = item["uID"] #check if fxn actually works
+                    meta["user"] = userDb.getUsername(item["uID"])
+                    meta["published"] = item["published"]
+                    meta["timeCreated"] = item["timeCreated"]
+                    meta["timeUpdated"] = item["timeUpdated"]
+                    meta["data"] = item["data"]
+                    ret.append(meta)
+                    ctr += 1
+                else:
+                    break
+            else:
+                ctr += 1
+        return ret
     else:
         finder = cM.find(
             { "mapName" : searchQuery }
             ).sort( "tUpdated", pymongo.DESCENDING )
         for item in finder:
-            start = (PageNum - 1) * 10
-            end = start + 9
+            start = (PageNum - 1) * 12
+            end = start + 12
             ctr = 0
-            while len(ret) < 10 and start <= ctr and ctr < end:
-                meta = {}
-                meta["mapID"] = item["mapID"]
-                meta["mapName"] = item["mapName"]
-                meta["uID"] = item["uID"] #check if fxn actually works
-                meta["published"] = item["published"]
-                meta["timeCreated"] = item["timeCreated"]
-                meta["timeUpdated"] = item["timeUpdated"]
-                meta["data"] = item["data"]
-                ret.append(meta)
+            if ctr >= start:
+                if ctr < end:
+                    meta = {}
+                    meta["mapID"] = item["mapID"]
+                    meta["mapName"] = item["mapName"]
+                    meta["uID"] = item["uID"] #check if fxn actually works
+                    meta["user"] = userDb.getUsername(item["uID"])
+                    meta["published"] = item["published"]
+                    meta["timeCreated"] = item["timeCreated"]
+                    meta["timeUpdated"] = item["timeUpdated"]
+                    meta["data"] = item["data"]
+                    ret.append(meta)
+                    ctr += 1
+                else:
+                    break
+            else:
+                ctr += 1
             return ret
         
 
