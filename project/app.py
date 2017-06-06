@@ -88,7 +88,6 @@ def mapEditTest():
 
 @app.route("/map/<mapID>/edit")
 def mapEdit(mapID):
-    session["mID"] = mapID
     if not mapUtil.ownsMap(getUserID(), mapID):
         return redirect( url_for('root') )
     else:
@@ -100,9 +99,8 @@ def mapEdit(mapID):
 @app.route("/create/", methods=["POST"])
 def mapRedirect():
     mapName = request.form["mapName"]
-    mapID = mapUtil.makeNewMap(mapName, getUserID()) #returns id
-    session["mID"] = mapID
-    return redirect("/map/" + str(mapID) + "/edit")#url_for(mapEdit(mapID)
+    mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
+    return redirect("/map/" + str(mapId) + "/edit")#url_for(mapEdit(mapId))
 
 #MAP SAVING
 @app.route("/saveData/", methods=["POST"])
@@ -115,14 +113,21 @@ def mapSave():
 #MAP LOAD
 @app.route("/loadData/", methods=["GET"])
 def mapLoad():
+<<<<<<< HEAD
+    mapData = request.form.get("mapID")
+    mapUtil.store(mapData)
+    print json.loads(mapData)
+    return True
+=======
     mapData = mapUtil.getMapData(int(session["mID"]))    
     print json.dumps(mapData)
     return json.dumps(mapData)
+>>>>>>> 8b80de833b04b123ce70f1fd1547c1bf6cf42b6e
 
 def allowed_file(filename):
 	return "." in filename and filename.rsplit( ".", 1 )[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route("/map/upload/<mapID>", methods=["POST"])
+@app.route("/map/upload/", methods=["POST"])
 def upload(mapID):
 	if "file" not in request.files:
 		return redirect( "/map/<mapID>/edit" )
@@ -189,11 +194,7 @@ def getUserID():
     else:
         return None
 
-def removeMapCookie():
-    if "mID" in session:
-        session.pop("mID")
-
 if __name__ == "__main__":
     app.debug = True
-    app.run()
-#    app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
+    #app.run()
+    app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
