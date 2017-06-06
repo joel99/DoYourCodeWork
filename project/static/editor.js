@@ -782,15 +782,17 @@ saveMapBtn.addEventListener("click", saveMap);
 //SAVING AND LOADING
 var saveMap = function(){
     var mapJSON = canvasToJSON();
+    console.log(mapJSON);
     $.ajax({
 	    url : "/saveData/",
 	    type: "POST",
+	    data: mapJSON,
 	    dataType: "json",
-	    data: JSON.stringify(mapJSON),
 	    success: function(response) {
 		console.log("works");
 	    },
-	    error: function() {
+	    error: function(data) {
+		console.log(data);
 		console.log("nope");
 	    }
 	});
@@ -813,7 +815,7 @@ var canvasToJSON = function(){
 			    "id": item.getAttribute("id"),
 			    "type": item.getAttribute("customType"),
 			   }//add color here
-	    /*
+
 	    switch (item.getAttribute("customType")){
 		case "pt":
 		case "node":
@@ -838,7 +840,7 @@ var canvasToJSON = function(){
 		break;
 	    }
 	    pageDict["data"].push(itemDict);
-*/
+	    /*
 	    switch (item.getAttribute("customType")){
 		case "pt":
 		case "node":
@@ -863,24 +865,13 @@ var canvasToJSON = function(){
 		break;
 	    }
 	    pageDict["data"].push(itemDict);
+	    */
 	}
     }
     console.log(canvasJSON);
-    $.ajax({
-	    type: "POST",
-	    url : "/saveData/",
-	    dataType: "json",
-	    data: {
-		canvasDict : canvasJSON
-	    },
-	    success: function(response) {
-		console.log("works");
-	    },
-	    error: function(response) {
-		console.log("nope");
-	    }
-	});
-    return canvasJSON;
+    console.log(JSON.stringify(canvasJSON));
+    //    return canvasJSON;
+    return JSON.stringify(canvasJSON)
 }
 
 var refreshIDs = function(){
