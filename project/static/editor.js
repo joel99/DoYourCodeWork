@@ -628,6 +628,16 @@ var addMonitorField = function(fieldName){//to be changed
 }
 
 var pullAJAXData = function(){
+    $.ajax({
+	    type: "GET",
+	    url: "/loadData/",
+	    data: {},
+	    dataType: "json",
+	    success: function(data) {
+		console.log("pulled Data");
+		return data;
+	    });
+	console.log("unable to pull Data");
     return null;
 }
 
