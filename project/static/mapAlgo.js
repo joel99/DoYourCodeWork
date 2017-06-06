@@ -81,11 +81,13 @@ var optPath = function ( paths, numNodes, start ) {
 };
 
 var constructPath = function (shortestPath, endNode) {
+    console.log(shortestPath);
     var path = [];
     while (endNode != shortestPath.start) {
 	path.unshift(endNode);
 	endNode = shortestPath.prevPaths[endNode];
     }
+    console.log(path);
     return path;
 };
 
