@@ -17,4 +17,5 @@ In ORDER:
 6. Test route generation (NOT DONE - Richard)
 7. Output page (someone write this)
 8. Fit file images to canvas
-9. 
+9. Map creators need to be use their maps as viewers
+10. 
