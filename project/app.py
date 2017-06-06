@@ -116,6 +116,7 @@ def mapSave():
 @app.route("/loadData/", methods=["GET"])
 def mapLoad():
     mapData = mapUtil.getMapData(int(session["mID"]))    
+    print json.dumps(mapData)
     return json.dumps(mapData)
 
 def allowed_file(filename):

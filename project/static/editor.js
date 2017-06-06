@@ -638,8 +638,8 @@ var addMonitorField = function(fieldName){//to be changed
 }
 
 var pullAJAXData = function(id){
-    var mapData = "";
-    $.ajax({
+    var mapData;
+    $.ajax({	    
 	    url: "/loadData/",
 	    type: "GET",
 	    data: "",
@@ -662,7 +662,8 @@ var loadMap = function(){//initalization script
     //        if (//mapData["canvasData"] != null) // UNCOMMENT
     //	    mapData != null){
     console.log(mapData);
-    	if (mapData == "") {
+    
+    	if (mapData == null) {
 	    totalPages = 0; //load
 	    idCount = 0; //simple id scheme, just count up every time element is made
 	    addPage();
