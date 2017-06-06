@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, session, url_for, redirect
 from utils import users, mapUtil, gallery
-import json
+import json, os
 
 app = Flask(__name__)
 app.secret_key = "secrets"
@@ -171,4 +171,5 @@ def getUserID():
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    #app.run()
+    app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))

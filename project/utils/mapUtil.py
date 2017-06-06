@@ -4,7 +4,7 @@ import datetime
 import time
 
 #initialize mongo database
-
+import pymongo 
 from pymongo import MongoClient
 
 server = MongoClient( "127.0.0.1" )
@@ -144,9 +144,8 @@ def mapPull( mapID ):
 def userFind( uID ):
     ret = []
     finder = cM.find(
-        { "uID" : int(uID) },
-        sort = sort( "tUpdated", pymongo.DESCENDING )
-        )
+        { "uID" : int(uID) }
+        ).sort( "tUpdated", pymongo.DESCENDING )
     for item in finder:
         meta = {}
         meta["mapID"] = item["mapID"]
@@ -162,11 +161,9 @@ def userFind( uID ):
 def getPage( PageNum, searchQuery ):
     ret = []
     if searchQuery == "":
-        finder = cM.find(
-            sort = sort( "tUpdated", pymongo.DESCENDING )
-            )
+        finder = cM.find().sort( "tUpdated", pymongo.DESCENDING )
         for item in finder:
-            start = (PageNum - 1) * 10
+            start = (int(PageNum) - 1) * 10
             end = start + 9
             ctr = 0
             while len(ret) < 10 and start <= ctr and ctr < end:
@@ -182,9 +179,8 @@ def getPage( PageNum, searchQuery ):
             return ret
     else:
         finder = cM.find(
-            { "mapName" : searchQuery },
-            sort = sort( "tUpdated", pymongo.DESCENDING )
-            )
+            { "mapName" : searchQuery }
+            ).sort( "tUpdated", pymongo.DESCENDING )
         for item in finder:
             start = (PageNum - 1) * 10
             end = start + 9

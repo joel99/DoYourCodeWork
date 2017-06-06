@@ -19,6 +19,7 @@ body{
 }
 
 #content{
+    color : white;
     border-radius: 0px;
     position: absolute;
     width: 100%;
