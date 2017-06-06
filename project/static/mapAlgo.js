@@ -44,23 +44,60 @@ var optPath = function ( paths, numNodes, start ) {
     // distance from start node is 0 (duh)
     pathLengths[start] = 0;
 
+    //find shortest path
     for (var i = 0; i < numVertices - 1; i++) {
+
+	// minimum values to create paths
+	var min = Infinity;
+	var minIndex = -1;
+	
+	
 	for (var j = 0; j < numOfNodes; j++) {
-	    if (!sptSet[j] && dist[j] <= min){
-		min = dist[j];
+	    // if a shortest path exists
+	    if (!pathTree[j] && pathLengths[j] <= min){
+		min = pathLengths[j];
 		minIndex = j;
 	    }
 	}
+	
+	// one shortest path exists
+	pathTree[minIndex] = true;
+	
+	for (var j = 0; j < numNodes; j++) {
+	    if (!pathTrees[j]) {
+		// check other paths that may be closer
+		var altDist = pathLengths[minIndex] + paths[minIndex];
+		if (altDist < pathLengths[j]) {
+		    pathLengths[j] = altDist;
+		    prevPaths[j] = minIndex;
+		}
+	    }
+	}
+	
     }
 
-    var min = Infinity;
-    var minIndex = -1;
-    
 
     
-    return minIndex;
+    
+    
+    return { "start": start,
+	     "pathLengths": pathLengths,
+	     "prevPaths": prevPaths };
     
 };
+
+var constructPath = function (shortestPath, endNode) {
+    var path = [];
+    while (endNode != shortestPath.start) {
+	path.unshift(endNode);
+	endNode = shortestPath.prevPaths[endNode];
+    }
+    return path;
+};
+
+//var map = makeEdges(..)
+
+var path1to3 = constructPath(optPath(map, numNodes, 1), 6);
 
 
 
