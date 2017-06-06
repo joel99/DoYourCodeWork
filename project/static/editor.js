@@ -769,6 +769,7 @@ var canvasToJSON = function(){
 			    "id": item.getAttribute("id"),
 			    "type": item.getAttribute("customType"),
 			   }//add color here
+	    /*
 	    switch (item.getAttribute("customType")){
 		case "pt":
 		case "node":
@@ -793,6 +794,31 @@ var canvasToJSON = function(){
 		break;
 	    }
 	    pageDict["data"].push(itemDict);
+*/
+	    switch (item.getAttribute("customType")){
+		case "pt":
+		case "node":
+		itemDict.cx = item.getAttribute("cx");
+		itemDict.cy = item.getAttribute("cy");
+		itemDict.r = item.getAttribute("r");
+		break;
+		case "cnxn":
+		itemDict.cx = item.getAttribute("cx");
+		itemDict.cy = item.getAttribute("cy");
+		itemDict.r = item.getAttribute("r");
+		itemDict.link = item.getAttribute("link");
+		break;
+		case "path":
+		itemDict.x1 = item.getAttribute("x1");
+		itemDict.y1 = item.getAttribute("y1");
+		itemDict.x2 = item.getAttribute("x2");
+		itemDict.y2 = item.getAttribute("y2");
+		itemDict.p1 = item.getAttribute("p1");
+		itemDict.p2 = item.getAttribute("p2");
+		itemDict.width = item.getAttribute("stroke-width");
+		break;
+	    }
+	    pageDict["data"].push(itemDict);
 	}
     }
     console.log(canvasJSON);
@@ -801,7 +827,7 @@ var canvasToJSON = function(){
 	    url : "/saveData/",
 	    dataType: "json",
 	    data: {
-		"canvasDict" : canvasJSON
+		canvasDict : canvasJSON
 	    },
 	    success: function(response) {
 		console.log("works");
