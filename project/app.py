@@ -103,12 +103,13 @@ def mapEdit(mapID):
 def mapRedirect():
     mapName = request.form["mapName"]
     mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
+    session["mID"] = mapId
     return redirect("/map/" + str(mapId) + "/edit")#url_for(mapEdit(mapId))
 
 #MAP SAVING
 @app.route("/saveData/", methods=["POST"])
 def mapSave():
-    mapData = request.form.get("canvasDict")
+    mapData = request.form.get("canvas")
     mapUtil.store(mapData)
     print json.loads(mapData)
     return True
@@ -199,6 +200,7 @@ def getUserID():
 
 if __name__ == "__main__":
     app.debug = True
-    #app.run()
-    app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
+    app.run()
+    #app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
+
 
