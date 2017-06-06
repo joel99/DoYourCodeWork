@@ -783,8 +783,8 @@ saveMapBtn.addEventListener("click", saveMap);
 var saveMap = function(){
     var mapJSON = canvasToJSON();
     $.ajax({
-	    type: "POST",
 	    url : "/saveData/",
+	    type: "POST",
 	    dataType: "json",
 	    data: JSON.stringify(mapJSON),
 	    success: function(response) {
