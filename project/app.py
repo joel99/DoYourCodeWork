@@ -113,10 +113,15 @@ def mapSave():
 #MAP LOAD
 @app.route("/loadData/", methods=["GET"])
 def mapLoad():
+<<<<<<< HEAD
     mapData = request.form.get("mapID")
     mapUtil.store(mapData)
     print json.loads(mapData)
     return True
+=======
+    mapData = mapUtil.getMapData(int(session["mID"]))    
+    return json.dumps(mapData)
+>>>>>>> 8b80de833b04b123ce70f1fd1547c1bf6cf42b6e
 
 def allowed_file(filename):
 	return "." in filename and filename.rsplit( ".", 1 )[1].lower() in ALLOWED_EXTENSIONS
