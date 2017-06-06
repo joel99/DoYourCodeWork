@@ -109,7 +109,9 @@ def mapSave():
 #MAP LOAD
 @app.route("/loadData/", methods=["GET"])
 def mapLoad():
-    
+    mapData = request.form.get("mapID")
+    mapUtil.store(mapData)
+    print json.loads(mapData)
     return True
 
 

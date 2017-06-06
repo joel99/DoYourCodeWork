@@ -637,11 +637,11 @@ var addMonitorField = function(fieldName){//to be changed
     monitor.appendChild(f);
 }
 
-var pullAJAXData = function(){
+var pullAJAXData = function(id){
     $.ajax({
 	    type: "GET",
 	    url: "/loadData/",
-	    data: {},
+	    data: {"mapID":id},
 	    dataType: "json",
 	    success: function(data) {
 		console.log("pulled Data");
@@ -653,7 +653,7 @@ var pullAJAXData = function(){
 
 //LOADING PAGE : needs refactoring
 var loadMap = function(){//initalization script
-    var mapData = pullAJAXData();
+    var mapData = pullAJAXData(id);
     //loadTitle(mapData["title"]); //UNCOMMENT
     if (//mapData["canvasData"] != null // UNCOMMENT
        mapData != null){
