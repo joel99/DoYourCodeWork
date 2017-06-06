@@ -1,0 +1,44 @@
+
+
+{% block content %}
+   
+    <div class="col-md-4">
+      <p>MODE: </p>
+      <button id="clrBtn">Clear Query</button>
+      <button id="srcNodeBtn">Source Node</button>
+      <button id="destNodeBtn">Path</button>
+      <button id="calcBtn">Calculate Path!</button>
+    </div>
+
+
+    <div class="col-md-8">
+      <svg id="editorCanvas" xmlns="http://www.w3.org/2000/svg" width = "1000", height = "500" style="border:1px solid #000000"/>
+
+      
+      <h1>
+	<div id="mapTitle"></div>
+      </h1>    
+      Page: <div id="pgTitle">      
+	 
+      </div>
+      <br>
+      <p>Status: <span id="status"></span></p>
+      <br>
+      <div id="monitor">
+	
+      </div>
+      
+    </div>
+      
+    <br>
+   
+{% endblock %}
+
+
+{% block js %}
+    <script src="../static/editor.js"></script>
+    <script src="../static/mapAlgo.js"></script>
+    <script src="../static/viewBtns.js"></script>
+    <!--<script src="../static/require.js"></script>-->
+    <!--<script src="../static/svg-pan-zoom.js"></script>-->
+{% endblock %}

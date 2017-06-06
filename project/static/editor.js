@@ -707,7 +707,7 @@ loadMap();
 var loadTitle = function(title){
     mapTitle.innerHTML = title;
 }
-
+/*
 //Buttons/Event Listeners
 var ptBtn = document.getElementById("ptBtn");
 var nodeBtn = document.getElementById("nodeBtn");
@@ -745,7 +745,7 @@ nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
 saveMapBtn.addEventListener("click", saveMap);
-
+*/
 //SAVING AND LOADING
 var saveMap = function(){
     var mapJSON = canvasToJSON();

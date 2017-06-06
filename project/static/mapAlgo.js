@@ -219,31 +219,65 @@ var clickedEl = null; //tracking
 
 var node1;
 var node2;
+var state;
+
+const DEFAULT = 0;
+const DEF_SRC = 1;
+const DEF_DEST = 2;
 
 var elClick = function(e){
-    if (mode == DEFAULT){
-	clrMonitor();
-	event.stopPropagation();
-	updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
-	addMonitorField("Name");
-	updateMonitor("Id", this.getAttribute("id"));
 
-	switch (this.getAttribute("customType")){
-	case "pt":
-	case "node":
-	    clickedEl = this;
+    clrMonitor();
+    event.stopPropagation();
+    updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
+    addMonitorField("Name");
+    updateMonitor("Id", this.getAttribute("id"));
+
+    switch (this.getAttribute("customType")){
+    case "pt":
+    case "node":
+	clickedEl = this;
+	break;
+    case "path":
+	updateMonitor("Point One", this.getAttribute("p1"));
+	updateMonitor("Point Two", this.getAttribute("p2"));
+	clickedEl = this;
+	break;
+    case "cnxn":
+	updateMonitor("Link", this.getAttribute("link"));
+	addMonitorField("Link");
+	clickedEl = this;
+	break;
+    }	
+    console.log(this.getAttribute("customType") + " clicked.");
+
+    if (this.getAttribute("customType") == "node" ||
+	this.getAttribute("customType") == "cnxn"){
+	switch (state){
+	case DEFAULT:
+	    //?
 	    break;
-	case "path":
-	    updateMonitor("Point One", this.getAttribute("p1"));
-	    updateMonitor("Point Two", this.getAttribute("p2"));
-	    clickedEl = this;
+	case DEF_SRC:
+	    srcNode = this.getAttribute("id");
 	    break;
-	case "cnxn":
-	    updateMonitor("Link", this.getAttribute("link"));
-	    addMonitorField("Link");
-	    clickedEl = this;
+	case DEF_DEST:
+	    destNode = this.getAttribute("id"); 
 	    break;
-	}	
-	console.log(this.getAttribute("customType") + " clicked.");
+	}
     }
+}
+
+
+var initialize = function(){
+    srcNode = null;
+    destNode = null;
+    state = DEFAULT;
+}
+
+initialize();
+
+var setModeFunc = function(newMode){
+    return function(){
+	state = newMode;
+    };
 }
