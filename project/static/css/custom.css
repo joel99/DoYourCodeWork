@@ -35,6 +35,15 @@ body{
 .nav.navbar-nav li a:hover{
 	border-bottom: 2px solid yellow;
 }
+
+#logo{
+    display: block;
+    max-width:130px;
+    max-height:56px;
+    width: auto;
+    height: auto;
+    margin-top: -15px;
+}
 /*----------------------------------------------------------------------------*/
 
 
@@ -53,6 +62,18 @@ body{
     border-radius: 0px;
 }
 
+#editorCanvas{
+    background: white;
+}
+
+h1, h2, #messagediv{
+    margin: auto;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    text-align: center;
+    color: white;
+}
+
 
 .jumbotron{
 	background: none;
@@ -67,7 +88,7 @@ body{
 }
 
 #homeinput{
-    height: 100px;
+    height: 50px;
 }
 
 
