@@ -178,3 +178,9 @@ joelY -- 2017-06-05 15:35
 
 - adding viewer's dictionary for site
 ==============================================
+
+================================
+joelY -- 2017-06-05 15:35
+
+- saving ajax fixed, field editing working on site
+==============================================

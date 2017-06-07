@@ -488,28 +488,9 @@ var canvasClick = function(e){
 
 var elClick = function(e){
     if (mode == DEFAULT){
-	clrMonitor();
+	clickedEl = this;
 	event.stopPropagation();
-	updateMonitor(this.getAttribute("customType"), this.getAttribute("name"));
-	addMonitorField("Name", "name");
-	updateMonitor("Id", this.getAttribute("id"));
-
-	switch (this.getAttribute("customType")){
-	case "pt":
-	case "node":
-	    clickedEl = this;
-	    break;
-	case "path":
-	    updateMonitor("Point One", this.getAttribute("p1"));
-	    updateMonitor("Point Two", this.getAttribute("p2"));
-	    clickedEl = this;
-	    break;
-	case "cnxn":
-	    updateMonitor("Link", this.getAttribute("link"));
-	    addMonitorField("Link", "link");
-	    clickedEl = this;
-	    break;
-	}	
+	refreshMonitor(this);	
 	console.log(this.getAttribute("customType") + " clicked.");
     }
 }
@@ -625,6 +606,25 @@ var clrMonitor = function(){
     monitor.innerHTML = "";
 }
 
+var refreshMonitor = function(item){
+    clrMonitor();
+    updateMonitor(item.getAttribute("customType"), item.getAttribute("name"));
+    addMonitorField("Name", "name");
+//    addMonitorField("Color", "color");
+    updateMonitor("Id", item.getAttribute("id"));
+
+    switch (item.getAttribute("customType")){
+    case "path":
+	updateMonitor("Point One", item.getAttribute("p1"));
+	updateMonitor("Point Two", item.getAttribute("p2"));
+	break;
+    case "cnxn":
+	updateMonitor("Link", item.getAttribute("link"));
+	addMonitorField("Link", "link");
+	break;
+    }
+}
+
 var updateMonitor = function(s1, s2){
     var s = document.createElement("p");
     s.innerHTML = s1 + " : " + s2;
@@ -636,7 +636,7 @@ var addMonitorField = function(fieldName, attr){//to be changed
     var s = document.createElement("span");
     s.innerHTML = fieldName + " ";
     var f = document.createElement("input");
-    f.setAttribute("srcAttr": attr);
+    f.setAttribute("srcAttr", attr);
     f.innerHTML = clickedEl.getAttribute(attr);
     d.appendChild(s);
     d.appendChild(f);
@@ -645,8 +645,10 @@ var addMonitorField = function(fieldName, attr){//to be changed
 }
 
 var updateField = function(){
-    console.log("field has changed to " + f.innerHTML);
-    clickedEl.setAttribute(f.getAttribute("srcAttr"), f.innerHTML);
+    var newData = this.lastChild.value;
+    console.log(this.lastChild.getAttribute("srcAttr") + " has changed to " + newData);
+    clickedEl.setAttribute(this.lastChild.getAttribute("srcAttr"), newData);
+    refreshMonitor(clickedEl);
 }
 
 var pullAJAXData = function(id){
@@ -798,7 +800,7 @@ var saveMap = function(){
     $.ajax({
 	    url : "/saveData/",
 	    type: "POST",
-	    data: mapJSON,
+	    data: {"canvas": mapJSON},
 	    dataType: "json",
 	    success: function(response) {
 		console.log("works");

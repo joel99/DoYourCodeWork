@@ -112,8 +112,12 @@ def mapRedirect():
 @app.route("/saveData/", methods=["POST"])
 def mapSave():
     mapData = request.form.get("canvas")
+<<<<<<< HEAD
     mapID = session["mID"]
     mapUtil.store( mapID, mapData )
+=======
+    #mapUtil.store(mapData)
+>>>>>>> d60f50e0631d88ccbb7f540d063cf61902408f4d
     print json.loads(mapData)
     return True
 

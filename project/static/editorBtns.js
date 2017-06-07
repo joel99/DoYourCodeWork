@@ -1,4 +1,5 @@
 //Buttons/Event Listeners
+
 var ptBtn = document.getElementById("ptBtn");
 var nodeBtn = document.getElementById("nodeBtn");
 var pathBtn = document.getElementById("pathBtn");
@@ -37,3 +38,4 @@ prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
 saveMapBtn.addEventListener("click", saveMap);
 //uploadImgBtn.addEventListener("click", uploadImg);
+
