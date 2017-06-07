@@ -86,7 +86,7 @@ def getMapData( mapID ):
         finder = cM.find_one(
             { "mapID" : int(mapID) }
             )
-        return finder
+        return finder["data"]
     return None
 
 def getTimeCreated( mapID ):

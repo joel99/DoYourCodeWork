@@ -516,20 +516,8 @@ var delEl = function(){
 
 	if (clickedEl.getAttribute("customType") == "cnxn")
 	    clrCnxn(clickedEl);
-
+	clrMonitor();
 	page.removeChild(clickedEl);
-	for (i = 0; i < page.children.length; i++){
-	    var child = page.childNodes[i];
-	    var type = child.getAttribute("customType");
-	    if (type == "pt" || type == "cnxn" || type == "node"){
-		childX = child.getAttribute("cx");
-		childY = child.getAttribute("cy");
-		if (distance(x,y,childX, childY) < champDist) {
-		    ret = child;
-		    champDist = distance(x,y,childX, childY);
-		}
-	    }
-	}
 	clickedEl = null;
 	clrMonitor();
     }
@@ -655,15 +643,15 @@ var pullAJAXData = function(id){
     var mapData;
     $.ajax({	    
 	    url: "/loadData/",
-	    type: "GET",
-	    data: "",
+	    type: "POST",
+	    data: {"mapId" : id},
 	    dataType: "json",
 	    success: function(data) {
-		console.log("pulled Data");
-		mapData = data;
+			console.log("pulled Data");
+			mapData = data;
 	    },
 		error: function() {
-		console.log("unable to pull Data");
+			console.log("unable to pull Data");
 	    }
 	});
     return mapData;
@@ -672,25 +660,25 @@ var pullAJAXData = function(id){
 //LOADING PAGE : needs refactoring
 var loadMap = function(){//initalization script
     var mapData = pullAJAXData(); //put in a parameter so mapData for an id is pulled
-    //loadTitle(mapData["title"]); //UNCOMMENT
+    loadTitle(mapData["title"]); //UNCOMMENT
     //        if (//mapData["canvasData"] != null) // UNCOMMENT
     //	    mapData != null){
     console.log(mapData);
     
-    	if (mapData == null) {
+    if (mapData["data"] == null) {
 	    totalPages = 0; //load
 	    idCount = 0; //simple id scheme, just count up every time element is made
 	    addPage();
 	    page = getActivePage();    
 	    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
 	    mode = DEFAULT;
-    	    console.log("jsMapDataNull");
-    	} else {
-        var canvasJSON = mapData["canvasData"]; //and then process it
+    	} 
+    else {
+        var canvasJSON = mapData["data"]; //and then process it
 	//totalPages = canvasJSON["pages"];
 	totalPages = 0;
 	idCount = canvasJSON["idCt"];
-	
+	var pageData;
 	for (pageData in canvasJSON["canvas"]){
 	    var page = addPage();
 	    page.setAttribute( "name", pageData["name"] );
@@ -712,7 +700,7 @@ var loadMap = function(){//initalization script
 	    }
 	    //if there's a bg image, attach it.
 	    
-	    
+	    var item;
 	    for (item in pageData["data"]){
 		var el;
 		switch (item["type"]){

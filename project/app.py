@@ -112,21 +112,22 @@ def mapRedirect():
 @app.route("/saveData/", methods=["POST"])
 def mapSave():
     mapData = request.form.get("canvas")
-<<<<<<< HEAD
     mapID = session["mID"]
     mapUtil.store( mapID, mapData )
-=======
-    #mapUtil.store(mapData)
->>>>>>> d60f50e0631d88ccbb7f540d063cf61902408f4d
     print json.loads(mapData)
     return True
 
 #MAP LOAD
-@app.route("/loadData/", methods=["GET"])
+@app.route("/loadData/", methods=["POST"])
 def mapLoad():
-    mapData = mapUtil.getMapData(int(session["mID"]))    
+    mapData = mapUtil.getMapData(int(session["mID"])) 
+    print "LOADING DATA\n\n\n"
+    print mapData
+    print "LOADING DATA\n\n\n"
+    #return mapData
     print json.dumps(mapData)
     return json.dumps(mapData)
+    #return null
 
 
 def allowed_file(filename):
@@ -159,14 +160,15 @@ def login():
     uN = request.form["username"]
     pwd = request.form["password"]
     #auth
+    msg = ""
     if 'login' in request.form:
         if users.isValidAccountInfo( uN, pwd ):
             session['uID'] = users.getUserID( uN )
         else:
-            message = "Invalid credentials"
+            msg = "Invalid credentials"
     else:
         message = "How"
-    return redirect( url_for('root', message=message) )
+    return redirect( url_for('root', message=msg) )
 
 @app.route("/logout/")
 def logout():
@@ -179,12 +181,13 @@ def register():
     uN = request.form["username"]
     pwd = request.form["password"]
     #reg
+    msg = ""
     if users.canRegister(uN):
         users.registerAccountInfo( uN, pwd )
         session['uID'] = users.getUserID( uN )
     else:
-        message = "User already exists"
-    return redirect( url_for('root', message=message) )
+        msg = "User already exists"
+    return redirect( url_for('root', message=msg) )
 
 # Setting Routes ======================================
 
