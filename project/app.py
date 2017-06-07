@@ -115,7 +115,7 @@ def mapSave():
     mapID = session["mID"]
     mapUtil.store( mapID, mapData )
     print json.loads(mapData)
-    return True
+    return mapData
 
 #MAP LOAD
 @app.route("/loadData/", methods=["POST"])

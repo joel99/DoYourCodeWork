@@ -84,9 +84,10 @@ Returns:
 def getMapData( mapID ):
     if exists( mapID ):
         finder = cM.find_one(
-            { "mapID" : int(mapID) }
+            { "mapID" : int(mapID) },
+            { "_id" : 0 }
             )
-        return finder["data"]
+        return finder
     return None
 
 def getTimeCreated( mapID ):
@@ -244,17 +245,15 @@ def addImage( url, mapID ):
     
 def store( mapID, mapData ):
     if exists( mapID ):
-        finder = cM.find_one(
-            { "mapID" : int(mapID) }
-        )
         cM.update_one(
             {"mapID" : int(mapID)},
             {"$set" :
-                [
-                    {"mapData" : mapData},
-                    {"timeUpdated" :  datetime.date.today().ctime()},
-                    {"tUpdated" : time.time()}
-                    ]
+                {
+                    "data" : mapData,
+                    "timeUpdated" :  datetime.date.today().ctime(),
+                    "tUpdated" : time.time()
+                    
+                    }
             }
             )
         return True

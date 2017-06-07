@@ -638,33 +638,37 @@ var updateField = function(){
     clickedEl.setAttribute(this.lastChild.getAttribute("srcAttr"), newData);
     refreshMonitor(clickedEl);
 }
-
-var pullAJAXData = function(id){
-    var mapData;
-    $.ajax({	    
+/*
+var pullAJAXData = function(mapDat){
+    console.log("order of ops");
+    $.ajax({	   
 	    url: "/loadData/",
 	    type: "POST",
-	    data: {"mapId" : id},
+	    //data: {"mapId" : id},
 	    dataType: "json",
 	    success: function(data) {
 			console.log("pulled Data");
-			mapData = data;
+			mapDat = data;
+			console.log(mapData);
+			console.log("done");
 	    },
 		error: function() {
 			console.log("unable to pull Data");
 	    }
 	});
-    return mapData;
+	console.log("checkpoint");
+	console.log(mapDat);
+	console.log("no work");
 }
-
+*/
 //LOADING PAGE : needs refactoring
-var loadMap = function(){//initalization script
-    var mapData = pullAJAXData(); //put in a parameter so mapData for an id is pulled
-    loadTitle(mapData["title"]); //UNCOMMENT
-    //        if (//mapData["canvasData"] != null) // UNCOMMENT
-    //	    mapData != null){
-    console.log(mapData);
-    
+var globalMapData = {};
+
+var loadMap = function(mapData){
+	console.log(mapData);
+	console.log(mapData["mapName"]);
+	loadTitle(mapData["mapName"]); //UNCOMMENT
+	
     if (mapData["data"] == null) {
 	    totalPages = 0; //load
 	    idCount = 0; //simple id scheme, just count up every time element is made
@@ -734,10 +738,29 @@ var loadMap = function(){//initalization script
 	}
 
     }
-
+	
 }
 
-loadMap();
+var loadMapWrap = function(){//initalization script
+	var mapData;
+    $.ajax({	   
+	    url: "/loadData/",
+	    type: "POST",
+	    //data: {"mapId" : id},
+	    dataType: "json",
+	    success: function(data) {
+			loadMap(data);
+			globalMapData["data"] = data;
+		},
+		error: function() {
+			console.log("unable to pull Data");
+	    }
+	});
+
+    
+}
+
+loadMapWrap();
 
 var loadTitle = function(title){
     mapTitle.innerHTML = title;
@@ -791,7 +814,7 @@ var saveMap = function(){
 	    data: {"canvas": mapJSON},
 	    dataType: "json",
 	    success: function(response) {
-		console.log("works");
+		console.log("map saved");
 	    },
 	    error: function(data) {
 		console.log(data);
