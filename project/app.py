@@ -23,7 +23,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/")
 def root():
-    return render_template( "home.html", isLoggedIn = isLoggedIn() )
+    if 'message' in request.args:
+        return render_template( "home.html", isLoggedIn = isLoggedIn(), message=request.args['message'] )
+    return render_template( "home.html", isLoggedIn = isLoggedIn())
+
 
 @app.route("/settings/")
 def settings():
@@ -50,7 +53,7 @@ def galleryPage(pageNum):
 def gallerySearch():
     if 'searchQ' in request.args:
         searchQuery = request.args['searchQ']
-        data = gallery.getPage(searchQuery)
+        data = gallery.getPage(1, searchQuery)
         if data == None:
             return render_template( "gallery.html", isLoggedIn = isLoggedIn() , message = "There were no search results for \"" + searchQuery + "\"")
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
@@ -109,7 +112,8 @@ def mapRedirect():
 @app.route("/saveData/", methods=["POST"])
 def mapSave():
     mapData = request.form.get("canvas")
-    mapUtil.store(mapData)
+    mapID = session["mID"]
+    mapUtil.store( mapID, mapData )
     print json.loads(mapData)
     return True
 
@@ -154,7 +158,11 @@ def login():
     if 'login' in request.form:
         if users.isValidAccountInfo( uN, pwd ):
             session['uID'] = users.getUserID( uN )
-    return redirect( url_for('root') )
+        else:
+            message = "Invalid credentials"
+    else:
+        message = "How"
+    return redirect( url_for('root', message=message) )
 
 @app.route("/logout/")
 def logout():
@@ -170,7 +178,9 @@ def register():
     if users.canRegister(uN):
         users.registerAccountInfo( uN, pwd )
         session['uID'] = users.getUserID( uN )
-    return redirect( url_for('root') )
+    else:
+        message = "User already exists"
+    return redirect( url_for('root', message=message) )
 
 # Setting Routes ======================================
 

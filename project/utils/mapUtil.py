@@ -241,6 +241,42 @@ def addImage( url, mapID ):
             )
         return True
     return False
+    
+def store( mapID, mapData ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : int(mapID) }
+        )
+        cM.update_one(
+            {"mapID" : int(mapID)},
+            {"$set" :
+                [
+                    {"mapData" : mapData},
+                    {"timeUpdated" :  datetime.date.today().ctime()},
+                    {"tUpdated" : time.time()}
+                    ]
+            }
+            )
+        return True
+    return False
+    
+def publish( mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : int(mapID) }
+        )
+        cM.update_one(
+            {"mapID" : int(mapID)},
+            {"$set" :
+                [
+                    {"published" : 1},
+                    {"timeUpdated" :  datetime.date.today().ctime()},
+                    {"tUpdated" : time.time()}
+                    ]
+            }
+            )
+        return True
+    return False
             
 #helper functions
 
