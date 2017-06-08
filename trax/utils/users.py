@@ -19,7 +19,7 @@ def getUsername( uID ):
     return userDb.getUserName( uID )
 
 def changePass( uID, old, new1, new2 ):
-    if isValidAccountInfo( getUsername( uID ), old ) and new1 == new2:
+    if isValidAccountInfo( getUsername( uID ), old  ) and new1 == new2:
         changePass( uID, hasher( new1 ))
     return True
 
