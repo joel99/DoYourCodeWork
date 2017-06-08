@@ -99,8 +99,41 @@ var path1to3 = constructPath(optPath(map, numNodes, 1), 6);
 
 var makeEdges = function (nodes) {
     // make sure nodes have id
-    // make sure paths have some sort of id
-    // see if there exists a path between each node - no path = infinity, yes path = dist formula
+    var dictOfEdges = {};
+    var mapData = scrapeMapData();
+    for (i in mapData["node"]) {
+	//create lists with correct number of total paths in for each node
+	for (j in mapData["path"]) {
+	    dictOfEdges[i].append("inf");
+	}
+    }
+
+    // now populate each list with correct distance
+    for (i in dictOfEdges) {
+	for (j in mapData["path"]) {
+	    //not sure how to access the values of each thing in "path"
+	    if (i == p1 || i == p2) { // <-- not sure if that's how we're going to compare if node is part of that path
+		dictOfEdges[i][j] = length(path) // <-- idk... it's supposed to be length of that path
+	    }
+	}
+    }
+
+    //alternate code using otherData
+
+
+    var otherData = augmentPoints(mapData); //not sure if this is how it's done
+
+    // more pseudocode :/
+    /*
+      for (i in dictOfEdges) {
+      for (j in dictOfEdges[i]) {
+      if (j in otherData[0][i]){
+      dictOfEdges[i][j] = dist(path)
+      }
+      }
+}
+     */
+
 };
 
 
