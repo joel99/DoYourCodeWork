@@ -117,8 +117,23 @@ var makeEdges = function (nodes) {
 	    }
 	}
     }
-    // make sure paths have some sort of id
-    // see if there exists a path between each node - no path = infinity, yes path = dist formula
+
+    //alternate code using otherData
+
+
+    var otherData = augmentPoints(mapData); //not sure if this is how it's done
+
+    // more pseudocode :/
+    /*
+      for (i in dictOfEdges) {
+      for (j in dictOfEdges[i]) {
+      if (j in otherData[0][i]){
+      dictOfEdges[i][j] = dist(path)
+      }
+      }
+}
+     */
+
 };
 
 
