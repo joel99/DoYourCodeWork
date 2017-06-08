@@ -4,8 +4,8 @@ import mapUtil
 
 #Gallery map data retrieval functions
 
-def getPage( PageNum=1, searchQuery="" ):
-    return mapUtil.getPage( PageNum, searchQuery )
+def getPage( userID, PageNum=1, searchQuery=""):
+    return mapUtil.getPage( PageNum, searchQuery, userID )
 
 #Map database functions for the gallery
 

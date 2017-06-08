@@ -42,7 +42,7 @@ def galleryRoute():
 #To do - figure out number of pages / how to link them at bottom (reference database)
 @app.route("/gallery/browse/page/<pageNum>")
 def galleryPage(pageNum):
-    data = gallery.getPage(pageNum) #<-- get back later
+    data = gallery.getPage( getUserID(), pageNum) #<-- get back later
     if len(data) == 0:
         #rip come back later
         return render_template( "gallery.html", isLoggedIn = isLoggedIn(), message = "There are no maps at this time :( Come back later" )
@@ -53,7 +53,7 @@ def galleryPage(pageNum):
 def gallerySearch():
     if 'searchQ' in request.args:
         searchQuery = request.args['searchQ']
-        data = gallery.getPage(1, searchQuery)
+        data = gallery.getPage( getUserID(), 1, searchQuery)
         if data == None:
             return render_template( "gallery.html", isLoggedIn = isLoggedIn() , message = "There were no search results for \"" + searchQuery + "\"")
     return render_template( "gallery.html", isLoggedIn = isLoggedIn(), mapLinkData = data )
@@ -113,7 +113,7 @@ def mapRedirect():
 def mapSave():
     mapData = request.form.get("canvas")
     mapID = session["mID"]
-    mapUtil.store( mapID, mapData )
+    print mapUtil.store( mapID, mapData )
     print json.loads(mapData)
     return mapData
 

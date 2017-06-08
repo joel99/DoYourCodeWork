@@ -137,20 +137,21 @@ def makeNewMap( mapName, userID ) :
         print "in fact, " + str(userID) + " owns " + str(doc["mapID"])
         return doc["mapID"]
     except:
-        return False
+        return 0
 
-def mapPull( mapID ):
+def mapPull( mapID, userID ):
     finder = cM.find_one(
         { "mapID" : int(mapID) }
         )
-    meta = {}
-    meta["mapID"] = finder["mapID"] #check if fxn actually works
-    meta["mapName"] = finder["mapName"]
-    meta["uID"] = finder["uID"]
-    meta["published"] = finder["published"]
-    meta["timeCreated"] = finder["timeCreated"]
-    meta["timeUpdated"] = finder["timeUpdated"]
-    meta["data"] = finder["data"]
+    meta = {}    
+    if visible( userID, mapID ):
+        meta["mapID"] = finder["mapID"] #check if fxn actually works
+        meta["mapName"] = finder["mapName"]
+        meta["uID"] = finder["uID"]
+        meta["published"] = finder["published"]
+        meta["timeCreated"] = finder["timeCreated"]
+        meta["timeUpdated"] = finder["timeUpdated"]
+        meta["data"] = finder["data"]
     return meta
 
 def userFind( uID ):
@@ -159,19 +160,20 @@ def userFind( uID ):
         { "uID" : int(uID) }
         ).sort( "tUpdated", pymongo.DESCENDING )
     for item in finder:
-        meta = {}
-        meta["mapID"] = item["mapID"]
-        meta["mapName"] = item["mapName"]
-        meta["uID"] = item["uID"] #check if fxn actually works
-        meta["user"] = userDb.getUsername(item["uID"])
-        meta["published"] = item["published"]
-        meta["timeCreated"] = item["timeCreated"]
-        meta["timeUpdated"] = item["timeUpdated"]
-        meta["data"] = item["data"]
-        ret.append(meta)
+        if visible(item["mapID"], uID):
+            meta = {}
+            meta["mapID"] = item["mapID"]
+            meta["mapName"] = item["mapName"]
+            meta["uID"] = item["uID"] #check if fxn actually works
+            meta["user"] = userDb.getUsername(item["uID"])
+            meta["published"] = item["published"]
+            meta["timeCreated"] = item["timeCreated"]
+            meta["timeUpdated"] = item["timeUpdated"]
+            meta["data"] = item["data"]
+            ret.append(meta)
     return ret
 
-def getPage( PageNum, searchQuery ):
+def getPage( PageNum, searchQuery, userID ):
     ret = []
     if searchQuery == "":
         finder = cM.find().sort( "tUpdated", pymongo.DESCENDING )
@@ -181,17 +183,18 @@ def getPage( PageNum, searchQuery ):
         for item in finder:
             if ctr >= start:
                 if ctr < end:
-                    meta = {}
-                    meta["mapID"] = item["mapID"]
-                    meta["mapName"] = item["mapName"]
-                    meta["uID"] = item["uID"] #check if fxn actually works
-                    meta["user"] = userDb.getUsername(item["uID"])
-                    meta["published"] = item["published"]
-                    meta["timeCreated"] = item["timeCreated"]
-                    meta["timeUpdated"] = item["timeUpdated"]
-                    meta["data"] = item["data"]
-                    ret.append(meta)
-                    ctr += 1
+                    if visible( userID, item["mapID"]):
+                        meta = {}
+                        meta["mapID"] = item["mapID"]
+                        meta["mapName"] = item["mapName"]
+                        meta["uID"] = item["uID"] #check if fxn actually works
+                        meta["user"] = userDb.getUsername(item["uID"])
+                        meta["published"] = item["published"]
+                        meta["timeCreated"] = item["timeCreated"]
+                        meta["timeUpdated"] = item["timeUpdated"]
+                        meta["data"] = item["data"]
+                        ret.append(meta)
+                        ctr += 1
                 else:
                     break
             else:
@@ -207,17 +210,18 @@ def getPage( PageNum, searchQuery ):
             ctr = 0
             if ctr >= start:
                 if ctr < end:
-                    meta = {}
-                    meta["mapID"] = item["mapID"]
-                    meta["mapName"] = item["mapName"]
-                    meta["uID"] = item["uID"] #check if fxn actually works
-                    meta["user"] = userDb.getUsername(item["uID"])
-                    meta["published"] = item["published"]
-                    meta["timeCreated"] = item["timeCreated"]
-                    meta["timeUpdated"] = item["timeUpdated"]
-                    meta["data"] = item["data"]
-                    ret.append(meta)
-                    ctr += 1
+                    if visible( userID, item["mapID"]):
+                        meta = {}
+                        meta["mapID"] = item["mapID"]
+                        meta["mapName"] = item["mapName"]
+                        meta["uID"] = item["uID"] #check if fxn actually works
+                        meta["user"] = userDb.getUsername(item["uID"])
+                        meta["published"] = item["published"]
+                        meta["timeCreated"] = item["timeCreated"]
+                        meta["timeUpdated"] = item["timeUpdated"]
+                        meta["data"] = item["data"]
+                        ret.append(meta)
+                        ctr += 1
                 else:
                     break
             else:
@@ -233,11 +237,11 @@ def addImage( url, mapID ):
         cM.update_one(
             {"mapID" : int(mapID)},
             {"$set" :
-                [
-                    {"outline" : finder["outline"].append(url)},
-                    {"timeUpdated" :  datetime.date.today().ctime()},
-                    {"tUpdated" : time.time()}
-                    ]
+                {   
+                    "outline" : finder["outline"].append(url),
+                    "timeUpdated" :  datetime.date.today().ctime(),
+                    "tUpdated" : time.time()
+                    }
             }
             )
         return True
@@ -267,15 +271,22 @@ def publish( mapID ):
         cM.update_one(
             {"mapID" : int(mapID)},
             {"$set" :
-                [
-                    {"published" : 1},
-                    {"timeUpdated" :  datetime.date.today().ctime()},
-                    {"tUpdated" : time.time()}
-                    ]
+                {
+                    "published" : 1,
+                    "timeUpdated" :  datetime.date.today().ctime(),
+                    "tUpdated" : time.time()
+                    }
             }
             )
         return True
     return False
+    
+def visible( userID, mapID ):
+    if exists( mapID ):
+        finder = cM.find_one(
+            { "mapID" : int(mapID) }
+        )
+        return finder["published"] == 1 or finder["uID"] == userID
             
 #helper functions
 
