@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 
-
 <div class= "container">
   {% for i in range(0, mapLinkData|length + 1, 4) %} <!-- update mapLinkData thing -->
-  
+
   {% if not loop.last %}
   <div class="row">
     
     {% for j in range(4) %}
     <div class="col-md-3">
+      {% if editPerm == "yes" %}
+      <a href="/map/{{mapLinkData[i + j].mapID}}/edit">
+      {% else %}
       <a href="/map/{{mapLinkData[i + j].mapID}}">
+      {% endif %}  
+      
       <div class="thumbnail">
         <img src="/static/images/GalleryDefaultThumbnail.PNG" alt="...">
         <div class="caption">
@@ -38,7 +42,7 @@
     {% for k in range(i + 1, i + mapLinkData|length % 4) %}
     <div class="col-md-3">
       {% if editPerm == "yes" %}
-      <a href="/map/{{mapLinkData[k].mapID}}">
+      <a href="/map/{{mapLinkData[k].mapID}}/edit">
       {% else %}
       <a href="/map/{{mapLinkData[k].mapID}}">
       {% endif %}

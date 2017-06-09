@@ -2,23 +2,23 @@
 
 {% block content %}
    
-    <div class="col-md-4">
+    <div class="col-md-2">
       <p>MODE: </p>
-      <button id="clrBtn">Clear Query</button>
-      <button id="srcNodeBtn">Source Node</button>
-      <button id="destNodeBtn">Path</button>
-      <button id="calcBtn">Calculate Path!</button>
+      <button id="clrBtn" class="btn btn-default edit">Clear Query</button><br>
+      <button id="srcNodeBtn" class="btn btn-default edit">Source Node</button><br>
+      <button id="destNodeBtn" class="btn btn-default edit">Path</button><br>
+      <button id="calcBtn" class="btn btn-default edit">Calculate Path!</button><br>
     </div>
 
 
-    <div class="col-md-8">
+    <div class="col-md-10">
       <svg id="editorCanvas" xmlns="http://www.w3.org/2000/svg" width = "1000", height = "500" style="border:1px solid #000000"/>
 
       
       <h1>
 	<div id="mapTitle"></div>
-      </h1>    
-      Page: <div id="pgTitle">      
+      </h1>  
+      Page <span id="pgNum"></span>:  <span id="pgTitle"></span>  
 	 
       </div>
       <br>
@@ -26,6 +26,10 @@
       <br>
       <div id="monitor">
 	
+      </div>
+      
+      <div id="directions">
+        
       </div>
       
     </div>

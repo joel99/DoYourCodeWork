@@ -15,6 +15,8 @@
 var editorCanvas = document.getElementById("editorCanvas");
 var width = editorCanvas.getAttribute("width");
 var height = editorCanvas.getAttribute("height");
+var pgNum = document.getElementById("pgNum");
+var pgTitle = document.getElementById("pgTitle");
 
 var mousex, mousey;
 
@@ -31,7 +33,6 @@ var logStatus = function(s){
 
 //Page stuff
 var mapTitle = document.getElementById("mapTitle");
-var pgTitle = document.getElementById("pgTitle");
 var monitor = document.getElementById("monitor");
 
 //Information
@@ -84,7 +85,9 @@ var setPage = function(num){
     
     clrActive();
     page = getActivePage();
-    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
+   // pgNum.innerHTML = page.getAttribute('num');
+   pgNum.innerHTML = "blah";
+    pgTitle.innerHTML =  page.getAttribute("name");
 
     for (i = 0; i < page.children.length; i++){
 	var child = page.childNodes[i];
@@ -114,20 +117,42 @@ var toPrevPage = function(){
 }
 
 var addPage = function(){
-
+	totalPages++;
     var p = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    p.setAttribute("name", "example");
-    p.setAttribute("num", totalPages + 1);
-
-    if (totalPages == 0){
+    p.setAttribute("name", "Example");
+    p.setAttribute("num", totalPages);
+    p.setAttribute("imgUrl", "white.png");//smh
+    
+    var d = document.createElement("defs");
+    var pat = document.createElement("pattern");
+    pat.setAttribute('id', totalPages + "bg");
+    pat.setAttribute('patternUnits', 'userSpaceOnUse');
+    pat.setAttribute('width', 4);
+    pat.setAttribute('height', 4);
+    d.appendChild(pat);
+    var im = document.createElement("image");
+    im.setAttribute("xlink:href", "white.png")//ADD A THING
+	im.setAttribute("width", 4);
+	im.setAttribute("height", 4);
+	pat.appendChild(im);
+    p.appendChild(d);
+    var r= document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    r.setAttribute("x", 0);
+	r.setAttribute("y", 0);
+	r.setAttribute("width", width);
+	r.setAttribute("height", height);
+	r.setAttribute("id", totalPages + "bgRect");
+	r.setAttribute("fill", "url(#" + totalPages + "bg)");
+	p.appendChild(r);
+	   
+	
+    if (totalPages == 1){
 	p.setAttribute("isCurrent", "true");
-	totalPages += 1;
 	editorCanvas.appendChild(p);		
 	p.setAttribute("id", "viewport");
     }
     else if (getActivePage().getAttribute("num") == totalPages){//there is already a page, and this is the last page
 	editorCanvas.appendChild(p);
-	totalPages += 1;	
 	toNextPage();
 	p.setAttribute("id", "viewport");
     }
@@ -145,6 +170,7 @@ var delPage = function(){
 	var curPage = getActivePage();
 	if (totalPages == 1){
 	    //disable thing...
+	    pgNum.innerHTML = "";
 	    pgTitle.innerHTML = "NO PAGES LEFT.";
 	}
 	else{
@@ -214,11 +240,12 @@ var makePath = function(x1, y1, x2, y2){
     l.setAttribute("x1", x1);
     l.setAttribute("y1", y1);
     l.setAttribute("x2", x2);
-    l.setAttribute("y2", x2);
+    l.setAttribute("y2", y2);
     l.setAttribute("stroke", "black");
     l.setAttribute("stroke-width", "4");
     l.setAttribute("customType", "path");
     l.setAttribute("active", true);
+    l.setAttribute("dist", 0);
     
     return l;
 }
@@ -264,6 +291,7 @@ var makeCnxn = function(x, y, r){//forbid "unlinked" name
     s.setAttribute("points", cnxnPts(x, y, r));
     s.setAttribute("customType", "cnxn");
     s.setAttribute("link", "unlinked");
+    s.setAttribute("linkDist", 0);
     
     return s;
 
@@ -366,24 +394,24 @@ var updateCanvas = function(e){
 }
 
 var distance = function(x1,y1,x2,y2){
-    x1 = parseInt(x1);
-    y1 = parseInt(y1);
-    x2 = parseInt(x2);
-    y2 = parseInt(y2);
+    //x1 = parseInt(x1);
+    //y1 = parseInt(y1);
+    //x2 = parseInt(x2);
+    //y2 = parseInt(y2);
     return Math.sqrt( Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2) );
 }
 
 var validPtDistance = function(x, y){
     var page = getActivePage();
     for (i = 0; i < page.children.length; i++){
-	var child = page.childNodes[i];
-	var type = child.getAttribute("customType");
-	if (type == "pt" || type == "cnxn" || type == "node"){
-	    childX = child.getAttribute("cx");
-	    childY = child.getAttribute("cy");
-	    if (distance(x,y,childX, childY) < 30)
-		return false;
-	}
+		var child = page.childNodes[i];
+		var type = child.getAttribute("customType");
+		if (type == "pt" || type == "cnxn" || type == "node"){
+	    	childX = child.getAttribute("cx");
+	    	childY = child.getAttribute("cy");
+	    	if (distance(x,y,childX, childY) < 30)
+				return false;
+		}
     }
     
     return true;
@@ -459,25 +487,33 @@ var canvasClick = function(e){
 	    line.setAttribute("y2", closest.getAttribute("cy"));
 	    if (distance(line.getAttribute("x1"), line.getAttribute("y1"),
 			 line.getAttribute("x2"), line.getAttribute("y2")) < 5){
-		getActivePage().removeChild(line);//prevent self-attachment
-		logStatus("No self-attachment!");
+			getActivePage().removeChild(line);//prevent self-attachment
+			logStatus("No self-attachment!");
 	    }
 	    line.setAttribute("p2", closest.getAttribute("id"));
 	    var page = getActivePage();
 	    for (i = 0; i < page.children.length - 1; i++){
-		var child = page.childNodes[i];
-		if (child.getAttribute("customType") == "path"){
-		    if ((child.getAttribute("p1") == line.getAttribute("p1") &&
-		         child.getAttribute("p2") == line.getAttribute("p2")) ||
-		       (child.getAttribute("p1") == line.getAttribute("p2") &&
-			child.getAttribute("p2") == line.getAttribute("p1"))
-			){
-			page.removeChild(line);
-			logStatus("The path already exists!");
-			break;
-		    }
-		}
+			var child = page.childNodes[i];
+			if (child.getAttribute("customType") == "path"){
+			    if ((child.getAttribute("p1") == line.getAttribute("p1") &&
+			         child.getAttribute("p2") == line.getAttribute("p2")) ||
+			       (child.getAttribute("p1") == line.getAttribute("p2") &&
+				child.getAttribute("p2") == line.getAttribute("p1"))
+				){
+				page.removeChild(line);
+				logStatus("The path already exists!");
+				break;
+			    }
+			}
 	    }
+	    
+	    //set default distance
+	    var x1 = line.getAttribute("x1");
+	    var y1 = line.getAttribute("y1");
+	    var x2 = line.getAttribute("x2");
+	    var y2 = line.getAttribute("y2");
+	    line.setAttribute("dist", pythDist(x1, y1, x2, y2));
+	    
 	    line.addEventListener("click", elClick);
 	}
 	break;
@@ -527,15 +563,16 @@ var delEl = function(){
 }
 
 var clrCnxn = function(cnxn){
-    tarID = cnxn.getAttribute("link");
+    var tarID = cnxn.getAttribute("link");
+    var i,j;
     for (i = 0; i < editorCanvas.children.length; i++){
-	var page = editorCanvas.childNodes[i];
-	for (j = 0; j < page.children.length; j++){
-	    var child = page.childNodes[j];
-	    if (child.getAttribute("id") == tarID){
-		child.setAttribute("link", "unlinked");
-	    }
-	}
+		var page = editorCanvas.childNodes[i];
+		for (j = 0; j < page.children.length; j++){
+		    var child = page.childNodes[j];
+		    if (child.getAttribute("id") == tarID){
+			child.setAttribute("link", "unlinked");
+		    }
+		}
     }
 }
 
@@ -608,16 +645,19 @@ var refreshMonitor = function(item){
     case "path":
 	updateMonitor("Point One", item.getAttribute("p1"));
 	updateMonitor("Point Two", item.getAttribute("p2"));
+	addMonitorField("Link Distance", "dist")
 	break;
     case "cnxn":
 	updateMonitor("Link", item.getAttribute("link"));
 	addMonitorField("Link", "link");
+	addMonitorField("Connection Distance", "linkDist")
 	break;
     }
 }
 
 var updateMonitor = function(s1, s2){
     var s = document.createElement("p");
+    //s.setAttribute("class", djlksjfd);
     s.innerHTML = s1 + " : " + s2;
     monitor.appendChild(s);
 }
@@ -625,7 +665,7 @@ var updateMonitor = function(s1, s2){
 var addMonitorField = function(fieldName, attr){//to be changed
     var d = document.createElement("div");
     var s = document.createElement("span");
-    s.innerHTML = fieldName + " ";
+    s.innerHTML = fieldName + " " + clickedEl.getAttribute(attr);
     var f = document.createElement("input");
     f.setAttribute("srcAttr", attr);
     f.innerHTML = clickedEl.getAttribute(attr);
@@ -639,36 +679,17 @@ var updateField = function(){
     var newData = this.lastChild.value;
     console.log(this.lastChild.getAttribute("srcAttr") + " has changed to " + newData);
     clickedEl.setAttribute(this.lastChild.getAttribute("srcAttr"), newData);
+    //get that first part:
+	var res =  this.firstChild.innerHTML.split(" ")[0];
+	this.firstChild.innerHTML = res + " " + newData;
     refreshMonitor(clickedEl);
 }
-/*
-var pullAJAXData = function(mapDat){
-    console.log("order of ops");
-    $.ajax({	   
-	    url: "/loadData/",
-	    type: "POST",
-	    //data: {"mapId" : id},
-	    dataType: "json",
-	    success: function(data) {
-			console.log("pulled Data");
-			mapDat = data;
-			console.log(mapData);
-			console.log("done");
-	    },
-		error: function() {
-			console.log("unable to pull Data");
-	    }
-	});
-	console.log("checkpoint");
-	console.log(mapDat);
-	console.log("no work");
-}
-*/
+
 //LOADING PAGE : needs refactoring
 var globalMapData = {};
 
 var loadMap = function(mapDataWrap){
-
+	console.log("loading");
 	console.log(mapDataWrap);
 	
 	loadTitle(mapDataWrap["mapName"]); //UNCOMMENT
@@ -678,8 +699,10 @@ var loadMap = function(mapDataWrap){
 	    totalPages = 0; //load
 	    idCount = 0; //simple id scheme, just count up every time element is made
 	    addPage();
-	    page = getActivePage();    
-	    pgTitle.innerHTML =  page.getAttribute("num") + " / " + page.getAttribute("name");
+	    page = getActivePage();
+	    
+    	pgNum.innerHTML = page.getAttribute('num');
+    	pgTitle.innerHTML =  page.getAttribute("name");
 	    mode = DEFAULT;
     	} 
     else {
@@ -689,76 +712,69 @@ var loadMap = function(mapDataWrap){
 		idCount = canvasJSON["idCt"];
 		var pageData;
 		for (i = 0; i < canvasJSON["canvas"].length; i++){
-			console.log("gdi");
 			pageData = canvasJSON["canvas"][i];
 		    var page = addPage();
 		    page.setAttribute( "name", pageData["name"] );
 		    //page.setAtribute( "num", pageData["num"] ); //not sure we need this
+		    page.setAttribute( "imgUrl", pageData["imgUrl"] );
+		    //set the img in the thing
+		    page.firstChild.setAttribute("xlink:href", pageData["imgUrl"]);
 		    page.setAttribute( "isCurrent", false );
 		    page.setAttribute( "id", "viewport" );
-	
-	/*
-		    if (pageData["bgUrl"] != null && pageData["bgUrl"] != ""){
-			page.append("defs")
-			    .append('pattern')
-			    .attr('id', pageData["num"].toString() + "bg")
-			    .attr('patternUnits', 'userSpaceOnUse')
-			    .attr('width', 4)
-			    .attr('height', 4)
-			    .append("image")
-			    .attr("xlink:href", "locked.png")
-			    .attr('width', 4)
-			    .attr('height', 4);
-		    }
-	*/
-		    //if there's a bg image, attach it.
-		    
+
 		    var item;
+
+		    console.log("PAGE DATA LENGTH IS " + pageData["data"].length);
+		    
 		    for (j = 0; j < pageData["data"].length; j++){//the first one is itself for some reason
 				item = pageData["data"][j];
 		    	console.log("registering item");
-		    	console.log(item);
-			var el;
-			switch (item["type"]){
-			    //name, id
-			case "pt":
-			    el = makePt(item["cx"], item["cy"], item["r"]);
-			    break;
-			case "node":
-			    el = makeNode(item["cx"], item["cy"], item["r"]);
-			    break;
-			case "cnxn":
-			    el = makeCnxn(item["cx"], item["cy"], item["r"]);
-			    el.setAttribute("link", item["link"]);
-			    break;
-			case "path":
-			    el = makePath(item["x1"], item["y1"], item["x2"], item["y2"]);
-			    el.setAttribute("p1", item["p1"]);
-			    el.setAttribute("p2", item["p2"]);
-			    el.setAttribute("stroke-width", item["width"]);
-			    break;
-			}
+
+		    	
+				var el;
+				switch (item["type"]){
+				    //name, id
+				case "pt":
+				    el = makePt(item["cx"], item["cy"], item["r"]);
+				    el.addEventListener("click", elClick);
+				    break;
+				case "node":
+				    el = makeNode(item["cx"], item["cy"], item["r"]);
+				    el.addEventListener("click", elClick);
+				    break;
+				case "cnxn":
+				    el = makeCnxn(item["cx"], item["cy"], item["r"]);
+				    el.setAttribute("link", item["link"]);
+				    el.setAttribute("linkDist", item["linkDist"]);
+				    el.addEventListener("click", elClick);
+				    break;
+				case "path":
+				    el = makePath(item["x1"], item["y1"], item["x2"], item["y2"]);
+				    el.setAttribute("p1", item["p1"]);
+				    el.setAttribute("p2", item["p2"]);
+				    el.setAttribute("stroke-width", item["width"]);
+				    el.setAttribute("dist", item["dist"]);
+				    break;
+				}
 			
-			el.setAttribute("name", item["name"]);
-			el.setAttribute("id", item["id"]);
-			el.setAttribute("visibility", "hidden");
-			page.appendChild(el);
+				el.setAttribute("name", item["name"]);
+				el.setAttribute("id", item["id"]);
+				el.setAttribute("visibility", "hidden");
+				page.appendChild(el);
+				console.log("j is " + j);
+				console.log(el);
 		    }
 		    
 		}
-		console.log("loop exited");
+		
 		totalPages = canvasJSON["pages"];
-		console.log(totalPages);
+
 		if (totalPages != 0){
 			
 	    	setPage(1);
 		}
-		else{
-			console.log("i hate everything");
-		}
 
     }
-    console.log("end reached");
 	
 }
 
@@ -786,45 +802,7 @@ loadMapWrap();
 var loadTitle = function(title){
     mapTitle.innerHTML = title;
 }
-/*
-//Buttons/Event Listeners
-var ptBtn = document.getElementById("ptBtn");
-var nodeBtn = document.getElementById("nodeBtn");
-var pathBtn = document.getElementById("pathBtn");
-var cnxnBtn = document.getElementById("cnxnBtn");
-var delElBtn = document.getElementById("delElBtn");
 
-var clrBtn = document.getElementById("clrBtn");
-var delPgBtn = document.getElementById("delPgBtn");
-var delMapBtn = document.getElementById("delMapBtn");
-var pubMapBtn = document.getElementById("pubMapBtn");
-var saveMapBtn = document.getElementById("saveMapBtn");
-var addPgBtn = document.getElementById("addPgBtn"); //file upload
-
-//note: might be replaced with better navigation system
-var nextPgBtn = document.getElementById("nextPgBtn");
-var lastPgBtn = document.getElementById("lastPgBtn");
-
-var saveMapBtn = document.getElementById("saveMapBtn");
-var pubMapBtn = document.getElementById("pubMapBtn");
-
-editorCanvas.addEventListener("click", canvasClick);
-editorCanvas.addEventListener("mousemove", updateCanvas);
-editorCanvas.addEventListener('contextmenu', rClick, false);
-
-ptBtn.addEventListener("click", setModeFunc(ADD_PT));
-pathBtn.addEventListener("click", setModeFunc(ADD_PATH));
-nodeBtn.addEventListener("click", setModeFunc(ADD_NODE));
-cnxnBtn.addEventListener("click", setModeFunc(ADD_CNXN));
-
-clrBtn.addEventListener("click", clrEditor);
-addPgBtn.addEventListener("click", addPage);
-delPgBtn.addEventListener("click", delPage);
-nextPgBtn.addEventListener("click", toNextPage);
-prevPgBtn.addEventListener("click", toPrevPage);
-delElBtn.addEventListener("click", delEl);
-saveMapBtn.addEventListener("click", saveMap);
-*/
 //SAVING AND LOADING
 var saveMap = function(){
     var mapJSON = canvasToJSON();
@@ -852,11 +830,14 @@ var canvasToJSON = function(){
     for (i = 0; i < editorCanvas.children.length; i++){
 	var child = editorCanvas.childNodes[i]; //store pages
 	var pageDict = {"name": child.getAttribute("name"), 
-			    "num": child.getAttribute("num"), 
+			    "num": child.getAttribute("num"),
+			    "imgUrl": child.getAttribute("imgUrl"),
 			    "data" : []}; 
 	canvasJSON["canvas"].push(pageDict);
-	for (j = 0; j < child.children.length; j++){
+	for (j = 0; j < child.children.length; j++){//first two are irrelevant
 	    var item = child.childNodes[j];
+	    if (item.getAttribute("name") == null || item.getAttribute("name") == "") 
+	    	continue;
 	    var itemDict = {"name": item.getAttribute("name"),
 			    "id": item.getAttribute("id"),
 			    "type": item.getAttribute("customType"),
@@ -874,6 +855,7 @@ var canvasToJSON = function(){
 		itemDict["cy"] = item.getAttribute("cy");
 		itemDict["r"] = item.getAttribute("r");
 		itemDict["link"] = item.getAttribute("link");
+		itemDict["linkDist"] = item.getAttribute('linkDist');
 		break;
 		case "path":
 		itemDict["x1"] = item.getAttribute("x1");
@@ -883,6 +865,7 @@ var canvasToJSON = function(){
 		itemDict["p1"] = item.getAttribute("p1");
 		itemDict["p2"] = item.getAttribute("p2");
 		itemDict["width"] = item.getAttribute("stroke-width");
+		itemDict["dist"] = item.getAttribute("dist");
 		break;
 	    }
 	    pageDict["data"].push(itemDict);
@@ -914,7 +897,6 @@ var canvasToJSON = function(){
 	    */
 	}
     }
-    console.log(canvasJSON);
     console.log(JSON.stringify(canvasJSON));
     //    return canvasJSON;
     return JSON.stringify(canvasJSON)
@@ -925,3 +907,89 @@ var refreshIDs = function(){
 }
 
     //i need to do the image stuff on the page.
+
+
+var pythDist = function(x1, y1, x2, y2){
+	
+	var dx = x2 - x1;
+	var dy = y2 - y1;
+	return Math.round( Math.sqrt(dy * dy + dx * dx) );
+	
+}
+
+var delMap = function(){
+	
+	alert("Are you sure?"); //are you sure?
+	
+}
+
+//FILE UPLOAD
+//REDO THESE SO THAT IT FITS OUR TEMPLATE
+var form = document.getElementById('form_upload');
+var fileSelect = document.getElementById('upload_input');
+var uploadButton = document.getElementById('upload-button');
+
+var imgUpload = function(event){
+
+	
+	event.preventDefault();
+	
+	// Update button text.
+	uploadButton.innerHTML = 'Uploading...';
+
+	 // Get the selected files from the input.
+	var files = upLoadButton.files;
+	
+	// Create a new FormData object.
+	var formData = new FormData();
+	
+	var file = files[0];
+	
+	// Check the file type.
+	if (!file.type.match('image.*')) {
+    	//continue;
+	}
+
+	// Add the file to the request.
+	formData.append('photos[]', file, file.name);
+	
+	// Set up the request.
+	var xhr = new XMLHttpRequest();
+	
+	// Open the connection.
+	xhr.open('POST', 'handler.php', true);
+	
+	// Set up a handler for when the request finishes.
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			// File(s) uploaded.
+			uploadButton.innerHTML = 'Upload';
+		} 
+		else {
+	    	alert('An error occurred!');
+	  }
+	};
+
+    // Send the Data.
+	xhr.send(formData);
+    
+    $.ajax({	   
+	    url: "/map/upload/",
+	    type: "POST",
+	    dataType: "json",
+		data : {"upload": formData
+		},//put relevant data in here so python /upload/ route can function
+		
+		
+	    success: function(data) {
+	    	
+	    	getActivePage().firstChild.setAttribute("xlink:href", response);
+			getActivePage().setAttribute("imgUrl", response);
+
+		},
+		error: function() {
+			console.log("unable to pull Data");
+	    }
+	});	
+	
+}

@@ -28,8 +28,6 @@ def exists( mapID ):
     finder = cM.find_one(
         { "mapID" : int(mapID) }
         )
-    print "clearly " + str(mapID) + " does not exist"
-    print finder is not None
     return finder is not None
 
 """
@@ -130,7 +128,7 @@ def makeNewMap( mapName, userID ) :
         doc["tCreated"] = time.time()
         doc["timeUpdated"] = datetime.date.today().ctime()
         doc["tUpdated"] = time.time()
-        doc["outline"] = []
+        #doc["outline"] = []
         doc["data"] = None
 
         cM.insert_one( doc )
@@ -152,6 +150,8 @@ def mapPull( mapID, userID ):
         meta["timeCreated"] = finder["timeCreated"]
         meta["timeUpdated"] = finder["timeUpdated"]
         meta["data"] = finder["data"]
+        print "this is meta[data]"
+        print meta["data"]
     return meta
 
 def userFind( uID ):
@@ -160,7 +160,7 @@ def userFind( uID ):
         { "uID" : int(uID) }
         ).sort( "tUpdated", pymongo.DESCENDING )
     for item in finder:
-        if visible(item["mapID"], uID):
+        if visible( uID, item["mapID"]):
             meta = {}
             meta["mapID"] = item["mapID"]
             meta["mapName"] = item["mapName"]
@@ -229,26 +229,43 @@ def getPage( PageNum, searchQuery, userID ):
                 ctr += 1
             return ret
         
-
+'''
 def addImage( url, mapID ):
     if exists( mapID ):
         finder = cM.find_one(
             { "mapID" : int(mapID) }
         )  
-        cM.update_one(
-            {"mapID" : int(mapID)},
-            {"$set" :
-                {   
-                    "outline" : finder["outline"].append(url),
-                    "timeUpdated" :  datetime.date.today().ctime(),
-                    "tUpdated" : time.time()
-                    }
-            }
-            )
-        return True
+        print finder["outline"]
+        if finder["outline"] == []:
+            cM.update_one(
+                {"mapID" : int(mapID)},
+                {"$set" :
+                    {   
+                        "outline" : [url],
+                        "timeUpdated" :  datetime.date.today().ctime(),
+                        "tUpdated" : time.time()
+                        }
+                }
+                )
+            return True
+        else:
+            cM.update_one(
+                {"mapID" : int(mapID)},
+                {"$set" :
+                    {   
+                        "outline" : finder["outline"] + [url],
+                        "timeUpdated" :  datetime.date.today().ctime(),
+                        "tUpdated" : time.time()
+                        }
+                }
+                )
+            return True
     return False
+'''
     
 def store( mapID, mapData ):
+    print "mapData"
+    print mapData
     if exists( mapID ):
         cM.update_one(
             {"mapID" : int(mapID)},
@@ -282,11 +299,22 @@ def publish( mapID ):
         return True
     return False
     
+def deleteMap( mapID ):
+    if exists( mapID ):
+        cM.delete_one(
+            { "mapID" : int(mapID) }
+            )
+        return True
+    return False
+    
 def visible( userID, mapID ):
     if exists( mapID ):
         finder = cM.find_one(
             { "mapID" : int(mapID) }
         )
+        #print "THIS IS FINDER"
+        #print finder["uID"]
+        #print userID
         return finder["published"] == 1 or finder["uID"] == userID
             
 #helper functions

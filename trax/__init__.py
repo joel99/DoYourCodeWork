@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, session, url_for, redirect
 from utils import users, mapUtil, gallery
 import json, os
+from os.path import join, dirname, realpath
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "secrets"
 
-UPLOAD_FOLDER = "/maps/"
-ALLOWED_EXTENSIONS = set(['jpg', 'png'])
+UPLOAD_FOLDER = join(dirname(realpath(__file__)), "maps/")
+ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -19,12 +20,19 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # NOTE: ALL ROUTES NEED TO END WITH / (ex. /login/ instead of /login)
 
+#Functions to look at:
+#Save button - editor.js - canvasToJSON 
+#AJAX - saveData
+#goes to backend (mapUtil)
+#LOADING
+#goes to frontend (maputil.userfind)
+#AJAX request - loadData - null data - specifcally 
 # Pages ========================================
 
 @app.route("/")
 def root():
     if 'message' in request.args:
-        return render_template( "home.html", isLoggedIn = isLoggedIn(), message=request.args['message'] )
+        return render_template( "home.html", isLoggedIn = isLoggedIn(), error=request.args['message'] )
     return render_template( "home.html", isLoggedIn = isLoggedIn())
 
 
@@ -60,7 +68,10 @@ def gallerySearch():
 
 @app.route("/gallery/mymaps/")
 def mymaps():
-    data = mapUtil.userFind(getUserID())
+    data = gallery.userPull( getUserID() )
+    print "hello"
+    print data
+    print "hello"
     #data = retrieve my maps function
     if len(data) == 0 or data == None:
         return render_template("gallery.html", isLoggedIn = isLoggedIn(), message = "You have no maps! Create one!")
@@ -115,14 +126,20 @@ def mapRedirect():
     mapId = mapUtil.makeNewMap(mapName, getUserID()) #returns id
     session["mID"] = mapId
     return redirect("/map/" + str(mapId) + "/edit")#url_for(mapEdit(mapId))
+    
+#DELETE MAP
+@app.route("/delMap/")
+def delMap():
+    mapUtil.deleteMap(session["mID"]) #Bugged
+    session.pop("mID")
+    return redirect(url_for('editmaps'))
 
 #MAP SAVING
 @app.route("/saveData/", methods=["POST"])
 def mapSave():
     mapData = request.form.get("canvas")
     mapID = session["mID"]
-    print mapUtil.store( mapID, mapData )
-    print json.loads(mapData)
+    mapUtil.store( mapID, mapData )
     return mapData
 
 #MAP LOAD
@@ -139,8 +156,11 @@ def mapLoad():
 
 
 def allowed_file(filename):
-	return "." in filename and filename.rsplit( ".", 1 )[1].lower() in ALLOWED_EXTENSIONS
+    print filename
+    return "." in filename and filename.rsplit( ".", 1 )[1].lower() in ALLOWED_EXTENSIONS
 
+
+#TURN THIS INTO AJAX, PASS URL BACK!
 @app.route("/map/upload/", methods=["POST"])
 def upload():
     if "upload" not in request.files:
@@ -148,16 +168,19 @@ def upload():
         print "nope"
         return redirect(url_for( "mapEdit", mapID = session["mID"]) )
     f = request.files["upload"]
-    if f.name == '':
+    if f.filename == '':
         print "also nope"
         return redirect(url_for( "mapEdit", mapID = session["mID"]))
-    if f and allowed_file(f.name):
-		filename = secure_filename(f.name)
+    if f and allowed_file(f.filename):
+		filename = secure_filename(f.filename)
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		mapUtil.addImage(os.path.abspath( filename ), session["mID"])
+		#mapUtil.addImage(os.path.abspath( f.filename ), session["mID"])
+		#store into js, and bring that to backend - via ajax?
 		print "nice"
-		return redirect(url_for( "mapEdit", mapID = session["mID"]))
-    print allowed_file(f.name)
+		return os.path.abspath( f.filename )
+    print "uhhhhhhhhhhh"
+    print f.filename
+    print allowed_file(f.filename)
     return redirect(url_for( "mapEdit", mapID = session["mID"]))
 
 # Login Routes ======================================

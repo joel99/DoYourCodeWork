@@ -37,5 +37,6 @@ nextPgBtn.addEventListener("click", toNextPage);
 prevPgBtn.addEventListener("click", toPrevPage);
 delElBtn.addEventListener("click", delEl);
 saveMapBtn.addEventListener("click", saveMap);
+delMapBtn.addEventListener("click", delMap);
 //uploadImgBtn.addEventListener("click", uploadImg);
 

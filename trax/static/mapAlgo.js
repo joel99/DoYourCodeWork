@@ -1,4 +1,4 @@
-editor.loadMap();
+loadMap();
 var mapData = pullUserAJAXData(); //no metadata, just item types?
 
 var chooseNode = function () {
@@ -12,7 +12,7 @@ var chooseNode = function () {
     
 };
 
-var numOfNodes = ; //include function for nums of nodes in map
+var numOfNodes = 6; //include function for nums of nodes in map
 
 var optPath = function ( paths, numNodes, start ) {
 
@@ -27,12 +27,12 @@ var optPath = function ( paths, numNodes, start ) {
     var prevPaths = new Array(numNodes);
 
     for (var i = 0; i < numNodes; i++) {
-	pathLengths[i] = paths[start][i];
-	//check if a path branching from the start node exists
-	if (paths[start][i] != Infinity) { 
-	    //store the node as part of the path
-	    prevPaths[i] = startVertex; 
-	}
+		pathLengths[i] = paths[start][i];
+		//check if a path branching from the start node exists
+		if (paths[start][i] != Infinity) { 
+		    //store the node as part of the path
+		    prevPaths[i] = start; 
+		}
     }
 
     // distance from start node is 0 (duh)
@@ -41,17 +41,17 @@ var optPath = function ( paths, numNodes, start ) {
     //find shortest path
     for (var i = 0; i < numVertices - 1; i++) {
 
-	// minimum values to create paths
-	var min = Infinity;
-	var minIndex = -1;
-	
-	
-	for (var j = 0; j < numOfNodes; j++) {
-	    // if a shortest path exists
-	    if (!pathTree[j] && pathLengths[j] <= min){
-		min = pathLengths[j];
-		minIndex = j;
-	    }
+		// minimum values to create paths
+		var min = Infinity;
+		var minIndex = -1;
+		
+		
+		for (var j = 0; j < numOfNodes; j++) {
+		    // if a shortest path exists
+		    if (!pathTree[j] && pathLengths[j] <= min){
+			min = pathLengths[j];
+			minIndex = j;
+		    }
 	}
 	
 	// one shortest path exists
@@ -59,12 +59,12 @@ var optPath = function ( paths, numNodes, start ) {
 	
 	for (var j = 0; j < numNodes; j++) {
 	    if (!pathTrees[j]) {
-		// check other paths that may be closer
-		var altDist = pathLengths[minIndex] + paths[minIndex];
-		if (altDist < pathLengths[j]) {
-		    pathLengths[j] = altDist;
-		    prevPaths[j] = minIndex;
-		}
+			// check other paths that may be closer
+			var altDist = pathLengths[minIndex] + paths[minIndex][j];
+			if (altDist < pathLengths[j]) {
+			    pathLengths[j] = altDist;
+			    prevPaths[j] = minIndex;
+			}
 	    }
 	}
 	
@@ -84,57 +84,84 @@ var constructPath = function (shortestPath, endNode) {
     console.log(shortestPath);
     var path = [];
     while (endNode != shortestPath.start) {
-	path.unshift(endNode);
-	endNode = shortestPath.prevPaths[endNode];
-    }
+		path.unshift(endNode);
+		endNode = shortestPath.prevPaths[endNode];
+	}
     console.log(path);
     return path;
 };
 
-//var map = makeEdges(..)
+var map = makeEdges();
 
-var path1to3 = constructPath(optPath(map, numNodes, 1), 6);
+//var path1to6 = constructPath(optPath(map, numNodes, 1), 6);
+
+var makePath = function (node1, node2) {
+	var mapData = augmentPoints(scrapeMapData());	
+	if (node1 != null && node2 != null) {
+		console.log(map);
+		var listOfNodes = constructPath(optPath(map, numNodes, node1), node2);
+		var listOfStuff = constructPath(optPath(map, numNodes, node1), node2);
+		var length = listOfNodes.length;
+		for (var i = 0; i < length - 1; i++) {
+			for (var j = 0; j < mapData[2]; j++) {
+				if (j[p1] == listOfNodes[i] && j[p2] == listOfNodes[i+1]) {
+					listOfStuff.append(j[id]);
+					break;
+				}
+			}
+		}
+		console.log(listOfNodes);
+		console.log("next is the better output");
+		console.log(listOfStuff);
+		
+		var directions = logDirection(listOfNodes);
+		
+		document.getElementById("directions").innerHTML = directions;
+		
+		
+		//highlighting portion
+		
+		
+		return listOfStuff;
+	}else {
+		console.log(node1);
+		console.log(node2);
+		return "Click on two nodes please"; //are nodes cleared?
+	}
+}
+
+var logDirection = function (nodeList) {
+	var string = "";
+	for (var i = 0; i < nodeList.length - 1; i++) {
+		string += "Move from point" + nodeList[i] + "to" + "point" + nodeList[i+1] + ". " 
+	}
+	return string;
+}
 
 
 
-var makeEdges = function (nodes) {
-    // make sure nodes have id                                                                                                                                                     
+var makeEdges = function () {
     var edges = [];
     var mapData = augmentPoints(scrapeMapData());
-    for (i in mapData["node"]) {
+    for (var i in mapData["node"]) {
         edges.append([]);
         //create lists with correct number of total paths in for each node                                                                                                         
-        for (j in mapData["path"]) {
+        for (var j in mapData["path"]) {
             edges[i].append(Infinity);
         }
     }
 
     // now populate each list with correct distance                                                                                                                                
-    for (i in edges) {
-        for (j in mapData[2]) {
+    for (var i in edges) {
+        for (var j in mapData[2]) {
             //not sure how to access the values of each thing in "path"                                                                                                            
             if (i == j[p1] || i == j[p2]) { // <-- not sure if that's how we're going to compare if node is part of that path                                                            
-                edges[i][j] = length(j) // <-- idk... it's supposed to be length of that path                                                                                   
+                edges[i][j] = j[dist]; // <-- idk... it's supposed to be length of that path                                                                                   
             }
             //put case for connections here                                                                                                                                        
         }
     }
 
-    //alternate code using otherData                                                                                                                                               
-
-
-    var otherData = augmentPoints(mapData); //not sure if this is how it's done                                                                                                    
-
-    // more pseudocode :/                                                                                                                                                          
-    /*                                                                                                                                                                             
-      for (i in dictOfEdges) {                                                                                                                                                     
-      for (j in dictOfEdges[i]) {                                                                                                                                                  
-      if (j in otherData[0][i]){                                                                                                                                                   
-      dictOfEdges[i][j] = dist(path)                                                                                                                                               
-      }                                                                                                                                                                            
-      }                                                                                                                                                                            
-}                                                                                                                                                                                  
-     */
 
     console.log(edges);
     return edges;
@@ -259,7 +286,6 @@ var node1;
 var node2;
 var state;
 
-const DEFAULT = 0;
 const DEF_SRC = 1;
 const DEF_DEST = 2;
 

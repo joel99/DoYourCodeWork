@@ -91,9 +91,11 @@
     </nav>
    
     <div id="content">
-      <div id="messagediv">
-	      <h2>{{message}}</h2>
+      {% if message %}
+      <div>
+	      <h2 class="messagediv">{{message}}</h2>
       </div>
+      {% endif %}
 
       
       {% block content %}
