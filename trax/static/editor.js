@@ -744,6 +744,7 @@ var loadMap = function(mapDataWrap){
 		    
 		}
 		console.log("loop exited");
+		totalPages = canvasJSON["pages"];
 		if (totalPages != 0){
 	    	setPage(1);
 	    	console.log("page set");
