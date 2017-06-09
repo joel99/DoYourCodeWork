@@ -68,6 +68,7 @@ var setPage = function(num){
     clrMonitor();
     
     var page = getActivePage();
+    if (page != null){
     var i;
     var child;
     for (i = 0; i < page.children.length; i++){
@@ -76,7 +77,9 @@ var setPage = function(num){
     }
 
     page.setAttribute("isCurrent", "false");
+    }
     getPage(num).setAttribute("isCurrent", "true");
+    page = getActivePage();
     page.setAttribute("id", "viewport");
     
     clrActive();
@@ -745,12 +748,13 @@ var loadMap = function(mapDataWrap){
 		}
 		console.log("loop exited");
 		totalPages = canvasJSON["pages"];
+		console.log(totalPages);
 		if (totalPages != 0){
+			
 	    	setPage(1);
-	    	console.log("page set");
 		}
 		else{
-			console.log("i hate eveyrthing");
+			console.log("i hate everything");
 		}
 
     }

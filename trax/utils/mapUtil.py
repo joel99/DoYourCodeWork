@@ -171,6 +171,7 @@ def userFind( uID ):
             meta["timeUpdated"] = item["timeUpdated"]
             meta["data"] = item["data"]
             ret.append(meta)
+    print ret
     return ret
 
 def getPage( PageNum, searchQuery, userID ):

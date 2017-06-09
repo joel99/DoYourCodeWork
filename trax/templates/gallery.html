@@ -37,7 +37,11 @@
     
     {% for k in range(i + 1, i + mapLinkData|length % 4) %}
     <div class="col-md-3">
+      {% if editPerm == "yes" %}
       <a href="/map/{{mapLinkData[k].mapID}}">
+      {% else %}
+      <a href="/map/{{mapLinkData[k].mapID}}">
+      {% endif %}
       <div class="thumbnail">
         <img src="/static/images/GalleryDefaultThumbnail.PNG" alt="...">
         <div class="caption">
