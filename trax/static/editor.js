@@ -664,12 +664,14 @@ var pullAJAXData = function(mapDat){
 //LOADING PAGE : needs refactoring
 var globalMapData = {};
 
-var loadMap = function(mapData){
-	console.log(mapData);
-	console.log(mapData["mapName"]);
-	loadTitle(mapData["mapName"]); //UNCOMMENT
+var loadMap = function(mapDataWrap){
+
+	console.log(mapDataWrap);
 	
-    if (mapData["data"] == null) {
+	loadTitle(mapDataWrap["mapName"]); //UNCOMMENT
+	
+	
+    if (mapDataWrap["data"] == null) {
 	    totalPages = 0; //load
 	    idCount = 0; //simple id scheme, just count up every time element is made
 	    addPage();
@@ -678,66 +680,80 @@ var loadMap = function(mapData){
 	    mode = DEFAULT;
     	} 
     else {
-        var canvasJSON = mapData["data"]; //and then process it
-	//totalPages = canvasJSON["pages"];
-	totalPages = 0;
-	idCount = canvasJSON["idCt"];
-	var pageData;
-	for (pageData in canvasJSON["canvas"]){
-	    var page = addPage();
-	    page.setAttribute( "name", pageData["name"] );
-	    //page.setAtribute( "num", pageData["num"] ); //not sure we need this
-	    page.setAttribute( "isCurrent", false );
-	    page.setAttribute( "id", "viewport" );
-
-	    if (pageData["bgUrl"] != null && pageData["bgUrl"] != ""){
-		page.append("defs")
-		    .append('pattern')
-		    .attr('id', pageData["num"].toString() + "bg")
-		    .attr('patternUnits', 'userSpaceOnUse')
-		    .attr('width', 4)
-		    .attr('height', 4)
-		    .append("image")
-		    .attr("xlink:href", "locked.png")
-		    .attr('width', 4)
-		    .attr('height', 4);
-	    }
-	    //if there's a bg image, attach it.
-	    
-	    var item;
-	    for (item in pageData["data"]){
-		var el;
-		switch (item["type"]){
-		    //name, id
-		case "pt":
-		    el = makePt(item["cx"], item["cy"], item["r"]);
-		    break;
-		case "node":
-		    el = makeNode(item["cx"], item["cy"], item["r"]);
-		    break;
-		case "cnxn":
-		    el = makeCnxn(item["cx"], item["cy"], item["r"]);
-		    el.setAttribute("link", item["link"]);
-		    break;
-		case "path":
-		    el = makePath(item["x1"], item["y1"], item["x2"], item["y2"]);
-		    el.setAttribute("p1", item["p1"]);
-		    el.setAttribute("p2", item["p2"]);
-		    el.setAttribute("stroke-width", item["width"]);
-		    break;
+    	var canvasJSON = JSON.parse(mapDataWrap["data"]);
+		totalPages = 0;
+		console.log(canvasJSON);
+		idCount = canvasJSON["idCt"];
+		var pageData;
+		for (i = 0; i < canvasJSON["canvas"].length; i++){
+			console.log("gdi");
+			pageData = canvasJSON["canvas"][i];
+		    var page = addPage();
+		    page.setAttribute( "name", pageData["name"] );
+		    //page.setAtribute( "num", pageData["num"] ); //not sure we need this
+		    page.setAttribute( "isCurrent", false );
+		    page.setAttribute( "id", "viewport" );
+	
+	/*
+		    if (pageData["bgUrl"] != null && pageData["bgUrl"] != ""){
+			page.append("defs")
+			    .append('pattern')
+			    .attr('id', pageData["num"].toString() + "bg")
+			    .attr('patternUnits', 'userSpaceOnUse')
+			    .attr('width', 4)
+			    .attr('height', 4)
+			    .append("image")
+			    .attr("xlink:href", "locked.png")
+			    .attr('width', 4)
+			    .attr('height', 4);
+		    }
+	*/
+		    //if there's a bg image, attach it.
+		    
+		    var item;
+		    for (j = 0; j < pageData["data"].length; j++){//the first one is itself for some reason
+				item = pageData["data"][j];
+		    	console.log("registering item");
+		    	console.log(item);
+			var el;
+			switch (item["type"]){
+			    //name, id
+			case "pt":
+			    el = makePt(item["cx"], item["cy"], item["r"]);
+			    break;
+			case "node":
+			    el = makeNode(item["cx"], item["cy"], item["r"]);
+			    break;
+			case "cnxn":
+			    el = makeCnxn(item["cx"], item["cy"], item["r"]);
+			    el.setAttribute("link", item["link"]);
+			    break;
+			case "path":
+			    el = makePath(item["x1"], item["y1"], item["x2"], item["y2"]);
+			    el.setAttribute("p1", item["p1"]);
+			    el.setAttribute("p2", item["p2"]);
+			    el.setAttribute("stroke-width", item["width"]);
+			    break;
+			}
+			
+			el.setAttribute("name", item["name"]);
+			el.setAttribute("id", item["id"]);
+			el.setAttribute("visibility", "hidden");
+			page.appendChild(el);
+		    }
+		    
 		}
-		
-		el.setAttribute("name", item["name"]);
-		el.setAttribute("id", item["id"]);
-		el.setAttribute("visibility", "hidden");
-		page.appendChild(el);
-	    }
-	}
-	if (totalPages != 0){
-            setPage(1);
-	}
+		console.log("loop exited");
+		if (totalPages != 0){
+	    	setPage(1);
+	    	console.log("page set");
+		}
+		else{
+			console.log("i hate eveyrthing");
+		}
 
     }
+    console.log("end reached");
 	
 }
 

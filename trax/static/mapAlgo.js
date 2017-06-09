@@ -98,41 +98,46 @@ var path1to3 = constructPath(optPath(map, numNodes, 1), 6);
 
 
 var makeEdges = function (nodes) {
-    // make sure nodes have id
-    var dictOfEdges = {};
-    var mapData = scrapeMapData();
+    // make sure nodes have id                                                                                                                                                     
+    var edges = [];
+    var mapData = augmentPoints(scrapeMapData());
     for (i in mapData["node"]) {
-	//create lists with correct number of total paths in for each node
-	for (j in mapData["path"]) {
-	    dictOfEdges[i].append("inf");
-	}
+        edges.append([]);
+        //create lists with correct number of total paths in for each node                                                                                                         
+        for (j in mapData["path"]) {
+            edges[i].append(Infinity);
+        }
     }
 
-    // now populate each list with correct distance
-    for (i in dictOfEdges) {
-	for (j in mapData["path"]) {
-	    //not sure how to access the values of each thing in "path"
-	    if (i == p1 || i == p2) { // <-- not sure if that's how we're going to compare if node is part of that path
-		dictOfEdges[i][j] = length(path) // <-- idk... it's supposed to be length of that path
-	    }
-	}
+    // now populate each list with correct distance                                                                                                                                
+    for (i in edges) {
+        for (j in mapData[2]) {
+            //not sure how to access the values of each thing in "path"                                                                                                            
+            if (i == j[p1] || i == j[p2]) { // <-- not sure if that's how we're going to compare if node is part of that path                                                            
+                edges[i][j] = length(j) // <-- idk... it's supposed to be length of that path                                                                                   
+            }
+            //put case for connections here                                                                                                                                        
+        }
     }
 
-    //alternate code using otherData
+    //alternate code using otherData                                                                                                                                               
 
 
-    var otherData = augmentPoints(mapData); //not sure if this is how it's done
+    var otherData = augmentPoints(mapData); //not sure if this is how it's done                                                                                                    
 
-    // more pseudocode :/
-    /*
-      for (i in dictOfEdges) {
-      for (j in dictOfEdges[i]) {
-      if (j in otherData[0][i]){
-      dictOfEdges[i][j] = dist(path)
-      }
-      }
-}
+    // more pseudocode :/                                                                                                                                                          
+    /*                                                                                                                                                                             
+      for (i in dictOfEdges) {                                                                                                                                                     
+      for (j in dictOfEdges[i]) {                                                                                                                                                  
+      if (j in otherData[0][i]){                                                                                                                                                   
+      dictOfEdges[i][j] = dist(path)                                                                                                                                               
+      }                                                                                                                                                                            
+      }                                                                                                                                                                            
+}                                                                                                                                                                                  
      */
+
+    console.log(edges);
+    return edges;
 
 };
 
