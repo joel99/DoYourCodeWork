@@ -128,7 +128,7 @@ def makeNewMap( mapName, userID ) :
         doc["tCreated"] = time.time()
         doc["timeUpdated"] = datetime.date.today().ctime()
         doc["tUpdated"] = time.time()
-        #doc["outline"] = []
+        doc["outline"] = []
         doc["data"] = None
 
         cM.insert_one( doc )
@@ -229,7 +229,7 @@ def getPage( PageNum, searchQuery, userID ):
                 ctr += 1
             return ret
         
-'''
+
 def addImage( url, mapID ):
     if exists( mapID ):
         finder = cM.find_one(
@@ -261,7 +261,7 @@ def addImage( url, mapID ):
                 )
             return True
     return False
-'''
+
     
 def store( mapID, mapData ):
     print "mapData"
@@ -315,7 +315,7 @@ def visible( userID, mapID ):
         #print "THIS IS FINDER"
         #print finder["uID"]
         #print userID
-        return finder["published"] == 1 or finder["uID"] == userID
+        return finder["published"] == 1 or finder["uID"] == int(userID)
             
 #helper functions
 

@@ -42,6 +42,7 @@ var monitor = document.getElementById("monitor");
 var totalPages = 0; //load
 var idCount = 0; //simple id scheme, just count up every time element is made
 
+
 var getActivePage = function(){
     for (i = 0; i < editorCanvas.children.length; i++){
 	var child = editorCanvas.childNodes[i];
@@ -85,8 +86,8 @@ var setPage = function(num){
     
     clrActive();
     page = getActivePage();
-   // pgNum.innerHTML = page.getAttribute('num');
-   pgNum.innerHTML = "blah";
+    pgNum.innerHTML = page.getAttribute('num');
+   //pgNum.innerHTML = "blah";
     pgTitle.innerHTML =  page.getAttribute("name");
 
     for (i = 0; i < page.children.length; i++){
@@ -145,13 +146,12 @@ var addPage = function(){
 	r.setAttribute("fill", "url(#" + totalPages + "bg)");
 	p.appendChild(r);
 	   
-	
-    if (totalPages == 1){
+	if (totalPages == 1){
 	p.setAttribute("isCurrent", "true");
 	editorCanvas.appendChild(p);		
 	p.setAttribute("id", "viewport");
-    }
-    else if (getActivePage().getAttribute("num") == totalPages){//there is already a page, and this is the last page
+	 }
+    else if (getActivePage().getAttribute("num") == totalPages - 1){//there is already a page, and this is the last page
 	editorCanvas.appendChild(p);
 	toNextPage();
 	p.setAttribute("id", "viewport");
@@ -252,6 +252,8 @@ var makePath = function(x1, y1, x2, y2){
 
 var nodePts = function(x, y, r){//triangle
     r = parseInt(r);
+    x = parseInt(x);
+    y = parseInt(y);
     var t = x + "," + (y-r);
     var bL = Math.floor(x - r * .866) + "," + Math.floor(y + r * .5);
     var bR = Math.floor(x + r * .866) + "," + Math.floor(y + r * .5); 
@@ -274,6 +276,8 @@ var makeNode = function(x, y, r){
 
 var cnxnPts = function(x, y, r){//square
     r = parseInt(r);
+    x = parseInt(x);
+    y = parseInt(y);
     var tL = (x - r) + "," + (y - r);
     var tR = (x + r) + "," + (y - r);
     var bL = (x - r) + "," + (y + r);
@@ -589,6 +593,7 @@ var setModeFunc = function(newMode){
 	    newMode == ADD_CNXN ||
 	    newMode == ADD_NODE){
 	    var page = getActivePage();
+	    if (page != null || page != undefined)
 	    page.appendChild(makeShadow(0, 0, 20, newMode));
 	}
 	setMode(newMode);
@@ -636,6 +641,7 @@ var clrMonitor = function(){
 
 var refreshMonitor = function(item){
     clrMonitor();
+    console.log("monitor refreshing");
     updateMonitor(item.getAttribute("customType"), item.getAttribute("name"));
     addMonitorField("Name", "name");
 //    addMonitorField("Color", "color");
@@ -689,9 +695,8 @@ var updateField = function(){
 var globalMapData = {};
 
 var loadMap = function(mapDataWrap){
-	console.log("loading");
-	console.log(mapDataWrap);
-	
+	//console.log("loading");
+	//console.log(mapDataWrap);
 	loadTitle(mapDataWrap["mapName"]); //UNCOMMENT
 	
 	
@@ -719,17 +724,17 @@ var loadMap = function(mapDataWrap){
 		    page.setAttribute( "imgUrl", pageData["imgUrl"] );
 		    //set the img in the thing
 		    page.firstChild.setAttribute("xlink:href", pageData["imgUrl"]);
-		    page.setAttribute( "isCurrent", false );
+		    page.setAttribute( "isCurrent", "true" );
 		    page.setAttribute( "id", "viewport" );
 
 		    var item;
 
-		    console.log("PAGE DATA LENGTH IS " + pageData["data"].length);
+		    //console.log("PAGE DATA LENGTH IS " + pageData["data"].length);
 		    
 		    for (j = 0; j < pageData["data"].length; j++){//the first one is itself for some reason
 				item = pageData["data"][j];
-		    	console.log("registering item");
-
+				//console.log(item);
+		    	//console.log("registering item " + item["type"]);
 		    	
 				var el;
 				switch (item["type"]){
@@ -754,6 +759,9 @@ var loadMap = function(mapDataWrap){
 				    el.setAttribute("p2", item["p2"]);
 				    el.setAttribute("stroke-width", item["width"]);
 				    el.setAttribute("dist", item["dist"]);
+				    el.setAttribute("active", "false");
+				    el.addEventListener("click", elClick);
+				    //console.log("active set to false");
 				    break;
 				}
 			
@@ -761,8 +769,8 @@ var loadMap = function(mapDataWrap){
 				el.setAttribute("id", item["id"]);
 				el.setAttribute("visibility", "hidden");
 				page.appendChild(el);
-				console.log("j is " + j);
-				console.log(el);
+				//console.log("j is " + j);
+				//console.log(el);
 		    }
 		    
 		}
@@ -778,6 +786,7 @@ var loadMap = function(mapDataWrap){
 	
 }
 
+
 var loadMapWrap = function(){//initalization script
 	var mapData;
     $.ajax({	   
@@ -787,14 +796,14 @@ var loadMapWrap = function(){//initalization script
 	    dataType: "json",
 	    success: function(data) {
 			loadMap(data);
+			console.log("wrapper");
+			console.log(data);
 			globalMapData["data"] = data;
 		},
 		error: function() {
 			console.log("unable to pull Data");
 	    }
 	});
-
-    
 }
 
 loadMapWrap();
@@ -973,14 +982,27 @@ var imgUpload = function(event){
     // Send the Data.
 	xhr.send(formData);
     
-    $.ajax({	   
-	    url: "/map/upload/",
-	    type: "POST",
-	    dataType: "json",
-		data : {"upload": formData
-		},//put relevant data in here so python /upload/ route can function
+    //$.ajax({	   
+	  //  url: "/map/upload/",
+	   // type: "POST",
+	   // dataType: "json",
+		//data : {"upload": formData
+		// },//put relevant data in here so python /upload/ route can function
 		
+	
+	$.ajax($.extend({}, {
+		url: "/map/upload/",
+		type: 'POST',
+		data: formData,//put relevant data in here so python /upload/ route can function
+		cache: false,
+		dataType: 'json',
+		success: function(data, textStatus, jqXHR){ self.settings.success(data, textStatus, jqXHR); },
+		error: function(jqXHR, textStatus, errorThrown){ self.settings.error(jqXHR, textStatus, errorThrown); },
+		complete: function(jqXHR, textStatus){ self.settings.complete(jqXHR, textStatus); }
 		
+	}, self.settings.submitOptions));
+		
+		/*
 	    success: function(data) {
 	    	
 	    	getActivePage().firstChild.setAttribute("xlink:href", response);
@@ -990,6 +1012,9 @@ var imgUpload = function(event){
 		error: function() {
 			console.log("unable to pull Data");
 	    }
-	});	
+	);
+	*/
+	
+	return null;
 	
 }

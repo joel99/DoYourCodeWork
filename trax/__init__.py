@@ -93,6 +93,7 @@ def help():
 @app.route("/map/<mapID>")
 def mapPage(mapID):
     locked = True
+    session["mID"] = mapID  
    # if isPublished(mapID):
    #     locked = False
     if isLoggedIn():
@@ -174,10 +175,11 @@ def upload():
     if f and allowed_file(f.filename):
 		filename = secure_filename(f.filename)
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		#mapUtil.addImage(os.path.abspath( f.filename ), session["mID"])
+		mapUtil.addImage(os.path.abspath( f.filename ), session["mID"])
 		#store into js, and bring that to backend - via ajax?
 		print "nice"
-		return os.path.abspath( f.filename )
+		#return os.path.abspath( f.filename )
+		return redirect(url_for( "mapEdit", mapID = session["mID"]))
     print "uhhhhhhhhhhh"
     print f.filename
     print allowed_file(f.filename)
