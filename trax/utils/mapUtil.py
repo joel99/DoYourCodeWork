@@ -315,7 +315,10 @@ def visible( userID, mapID ):
         #print "THIS IS FINDER"
         #print finder["uID"]
         #print userID
-        return finder["published"] == 1 or finder["uID"] == int(userID)
+        owners = False
+        if userID != None:
+            owners = finder["uID"] == int(userID)
+        return finder["published"] == 1 or owners
             
 #helper functions
 
